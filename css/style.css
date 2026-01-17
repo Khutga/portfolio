@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #000;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* SİYAH GEÇİŞ (Vignette) */
+.bottom-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40%;
+    background: linear-gradient(to top, #000000, transparent);
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* BİLGİ PANELİ */
+#info-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 300px;
+    padding: 25px;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+    color: white;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+    pointer-events: none;
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100;
+    text-align: center;
+}
+
+#info-panel.active {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    pointer-events: all;
+}
+
+#panel-title {
+    margin-top: 0;
+    font-weight: 300;
+    font-size: 2.2rem;
+    background: linear-gradient(45deg, #fff, #aaa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#close-btn:hover {
+    color: #f00;
+    transform: rotate(90deg);
+}
+
+#panel-desc {
+    color: #bbb;
+    line-height: 1.6;
+    margin: 20px 0;
+}
