@@ -21,26 +21,38 @@ export class Background {
     }
 
     createNebula() {
-        const sphereGeo = new THREE.SphereGeometry(500, 60, 40);
-        sphereGeo.scale(-1, 1, 1);
+        // Devasa bir küre oluşturup içine giriyoruz
+        const sphereGeo = new THREE.SphereGeometry(800, 60, 40);
+        sphereGeo.scale(-1, 1, 1); // İçini görelim diye ters çeviriyoruz
 
         const canvas = document.createElement('canvas');
         canvas.width = 2048;
         canvas.height = 1024;
         const ctx = canvas.getContext('2d');
         
-        // Nebula çizimi
-        const gradient1 = ctx.createRadialGradient(
-            canvas.width * 0.3, canvas.height * 0.7, 0,
-            canvas.width * 0.3, canvas.height * 0.7, canvas.width * 0.8
+        // Zengin, Derin Uzay Gradyanı
+        const gradient = ctx.createRadialGradient(
+            canvas.width / 2, canvas.height / 2, 0,
+            canvas.width / 2, canvas.height / 2, canvas.width
         );
-        gradient1.addColorStop(0, "#0a0518");
-        gradient1.addColorStop(0.3, "#1a0030");
-        gradient1.addColorStop(0.6, "#2d0048");
-        gradient1.addColorStop(1, "#000000");
         
-        ctx.fillStyle = gradient1;
+        // Renk Paleti: Siyah -> Derin Mor -> Lacivert -> Siyah
+        gradient.addColorStop(0.0, "#050011"); // Merkez (Çok koyu mor)
+        gradient.addColorStop(0.4, "#0a0022"); // Orta (Mor)
+        gradient.addColorStop(0.8, "#000510"); // Dış (Lacivert)
+        gradient.addColorStop(1.0, "#000000"); // En dış (Tam Siyah)
+        
+        ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Biraz "Yıldız Tozu" (Noise) ekleyelim ki dümdüz durmasın
+        for (let i = 0; i < 5000; i++) {
+            const x = Math.random() * canvas.width;
+            const y = Math.random() * canvas.height;
+            const alpha = Math.random() * 0.3;
+            ctx.fillStyle = `rgba(100, 100, 255, ${alpha})`;
+            ctx.fillRect(x, y, 2, 2);
+        }
 
         const bgTexture = new THREE.CanvasTexture(canvas);
         bgTexture.minFilter = THREE.LinearFilter;
@@ -49,7 +61,8 @@ export class Background {
             sphereGeo, 
             new THREE.MeshBasicMaterial({ 
                 map: bgTexture,
-                side: THREE.BackSide
+                side: THREE.BackSide,
+                fog: false // Sisten etkilenmesin
             })
         );
         
@@ -57,239 +70,168 @@ export class Background {
     }
 
     createStarSystem() {
-        const stars = this.createStars(8000);
+        // Uzaktaki sabit yıldızlar
+        const stars = this.createStars(4000);
         this.stars = stars;
         this.scene.add(stars);
     }
 
-    createStars(count = 5000) {
+    createStars(count) {
         const positions = new Float32Array(count * 3);
         const sizes = new Float32Array(count);
-        const colors = new Float32Array(count * 3);
-        const alphas = new Float32Array(count);
         
         for(let i = 0; i < count; i++) {
-            const radius = 400 + Math.random() * 100;
-            const theta = Math.random() * Math.PI * 2;
-            const phi = Math.acos((Math.random() * 2) - 1);
+            const r = 400 + Math.random() * 400; // Yarıçap
+            const theta = 2 * Math.PI * Math.random();
+            const phi = Math.acos(2 * Math.random() - 1);
             
-            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-            positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-            positions[i * 3 + 2] = radius * Math.cos(phi);
+            positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = r * Math.cos(phi);
             
-            sizes[i] = 0.5 + Math.random() * 2;
-            
-            const colorIntensity = 0.7 + Math.random() * 0.3;
-            colors[i * 3] = colorIntensity;
-            colors[i * 3 + 1] = colorIntensity;
-            colors[i * 3 + 2] = 1.0;
-            
-            alphas[i] = 0.5 + Math.random() * 0.5;
+            sizes[i] = 0.5 + Math.random() * 1.5;
         }
         
-        const starsGeo = new THREE.BufferGeometry();
-        starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        starsGeo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-        starsGeo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-        starsGeo.setAttribute('alpha', new THREE.BufferAttribute(alphas, 1));
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
         
-        const starMat = new THREE.ShaderMaterial({
-            uniforms: {
-                time: { value: 0 },
-                pointTexture: { value: this.createStarTexture() }
-            },
-            vertexShader: `
-                attribute float size;
-                attribute vec3 color;
-                attribute float alpha;
-                varying vec3 vColor;
-                varying float vAlpha;
-                
-                void main() {
-                    vColor = color;
-                    vAlpha = alpha;
-                    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-                    gl_PointSize = size * (300.0 / -mvPosition.z);
-                    gl_Position = projectionMatrix * mvPosition;
-                }
-            `,
-            fragmentShader: `
-                uniform sampler2D pointTexture;
-                varying vec3 vColor;
-                varying float vAlpha;
-                
-                void main() {
-                    vec2 coord = gl_PointCoord - vec2(0.5);
-                    float dist = length(coord);
-                    if(dist > 0.5) discard;
-                    
-                    vec4 texColor = texture2D(pointTexture, gl_PointCoord);
-                    float glow = smoothstep(0.5, 0.0, dist);
-                    
-                    gl_FragColor = vec4(vColor, vAlpha * glow * texColor.a);
-                }
-            `,
+        // Basit ve performanslı yıldız materyali
+        const mat = new THREE.PointsMaterial({
+            size: 1,
+            sizeAttenuation: true,
+            color: 0xffffff,
             transparent: true,
-            blending: THREE.AdditiveBlending,
-            depthWrite: false
+            opacity: 0.8,
+            fog: false
         });
         
-        return new THREE.Points(starsGeo, starMat);
-    }
-
-    createStarTexture() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 64;
-        canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-        
-        const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
-        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        gradient.addColorStop(0.6, 'rgba(200, 220, 255, 0.8)');
-        gradient.addColorStop(1, 'rgba(150, 180, 255, 0)');
-        
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, 64, 64);
-        
-        return new THREE.CanvasTexture(canvas);
+        return new THREE.Points(geo, mat);
     }
 
     createDustClouds() {
-        const cloudGeo = new THREE.BufferGeometry();
-        const particleCount = 2000;
+        // Sahneye derinlik katan hafif toz bulutları
+        const particleCount = 500;
         const positions = new Float32Array(particleCount * 3);
         
         for(let i = 0; i < particleCount * 3; i += 3) {
-            const radius = 200 + Math.random() * 300;
+            const r = 200 + Math.random() * 200;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos((Math.random() * 2) - 1);
             
-            positions[i] = radius * Math.sin(phi) * Math.cos(theta);
-            positions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-            positions[i + 2] = radius * Math.cos(phi);
+            positions[i] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i + 2] = r * Math.cos(phi);
         }
         
-        cloudGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         
-        const cloudMat = new THREE.PointsMaterial({
-            size: 2,
-            color: 0x8866aa,
+        const mat = new THREE.PointsMaterial({
+            size: 4,
+            color: 0x442266, // Morumsu toz
             transparent: true,
-            opacity: 0.05,
+            opacity: 0.15,
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
         
-        this.dustClouds = new THREE.Points(cloudGeo, cloudMat);
+        this.dustClouds = new THREE.Points(geo, mat);
         this.scene.add(this.dustClouds);
     }
 
     createTwinklingStars() {
-        const twinkleGeo = new THREE.BufferGeometry();
-        const count = 100;
+        // HATA DÜZELTİLDİ: Shader kodundaki eksik değişkenler tanımlandı
+        const count = 150;
         const positions = new Float32Array(count * 3);
         const twinkleData = new Float32Array(count * 2);
         
         for(let i = 0; i < count; i++) {
-            const radius = 450 + Math.random() * 50;
+            const r = 350 + Math.random() * 100;
             const theta = Math.random() * Math.PI * 2;
             const phi = Math.acos((Math.random() * 2) - 1);
             
-            positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-            positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-            positions[i * 3 + 2] = radius * Math.cos(phi);
+            positions[i*3] = r * Math.sin(phi) * Math.cos(theta);
+            positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+            positions[i*3+2] = r * Math.cos(phi);
             
-            twinkleData[i * 2] = Math.random() * Math.PI * 2;
-            twinkleData[i * 2 + 1] = 0.5 + Math.random() * 2;
+            twinkleData[i*2] = Math.random() * Math.PI * 2; // Faz
+            twinkleData[i*2+1] = 0.5 + Math.random();       // Hız
         }
         
-        twinkleGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-        twinkleGeo.setAttribute('twinkleData', new THREE.BufferAttribute(twinkleData, 2));
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('twinkleData', new THREE.BufferAttribute(twinkleData, 2));
         
-        const twinkleMat = new THREE.ShaderMaterial({
+        const mat = new THREE.ShaderMaterial({
             uniforms: {
                 time: { value: 0 },
-                baseSize: { value: 1.5 }
+                baseSize: { value: 3.0 }
             },
             vertexShader: `
-                attribute vec2 twinkleData;
-                varying float vIntensity;
+                uniform float time;      // <-- EKLENDİ
+                uniform float baseSize;  // <-- EKLENDİ
+                
+                attribute vec2 twinkleData; // x: faz, y: hız
+                varying float vAlpha;
                 
                 void main() {
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                     gl_Position = projectionMatrix * mvPosition;
                     
-                    vIntensity = sin(time * twinkleData[1] + twinkleData[0]) * 0.5 + 0.5;
-                    gl_PointSize = baseSize * vIntensity * (300.0 / -mvPosition.z);
+                    // Yanıp sönme efekti (Sinüs dalgası)
+                    float twinkle = sin(time * twinkleData.y + twinkleData.x);
+                    vAlpha = 0.5 + 0.5 * twinkle; // 0 ile 1 arasında değişsin
+                    
+                    gl_PointSize = baseSize * (300.0 / -mvPosition.z);
                 }
             `,
             fragmentShader: `
-                varying float vIntensity;
+                varying float vAlpha;
                 
                 void main() {
+                    // Yuvarlak nokta çizimi
                     vec2 coord = gl_PointCoord - vec2(0.5);
-                    float dist = length(coord);
-                    if(dist > 0.5) discard;
+                    if(length(coord) > 0.5) discard;
                     
-                    float glow = smoothstep(0.5, 0.0, dist);
-                    gl_FragColor = vec4(1.0, 1.0, 1.0, vIntensity * glow);
+                    // Merkezden dışa doğru sönükleşen parlama
+                    float strength = 1.0 - (length(coord) * 2.0);
+                    gl_FragColor = vec4(1.0, 1.0, 1.0, vAlpha * strength);
                 }
             `,
             transparent: true,
-            blending: THREE.AdditiveBlending
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
         });
         
-        this.twinkleStars = new THREE.Points(twinkleGeo, twinkleMat);
+        this.twinkleStars = new THREE.Points(geo, mat);
         this.scene.add(this.twinkleStars);
     }
 
     createLights() {
-        // Ambient ışık
-        const ambientLight = new THREE.AmbientLight(0x221133, 0.3);
+        // Sahneyi aydınlatan loş ışıklar
+        const ambientLight = new THREE.AmbientLight(0x111122, 1.5);
         this.scene.add(ambientLight);
 
-        // Directional ışık
-        const directionalLight = new THREE.DirectionalLight(0x4466aa, 0.5);
-        directionalLight.position.set(100, 50, 100);
-        this.scene.add(directionalLight);
+        // Elması parlatan ana ışık
+        const dirLight = new THREE.DirectionalLight(0xaaccff, 1.0);
+        dirLight.position.set(50, 50, 100);
+        this.scene.add(dirLight);
 
-        // Nokta ışıkları
-        for(let i = 0; i < 20; i++) {
-            const light = new THREE.PointLight(0x88aaff, 0.5 + Math.random() * 0.5, 100);
-            light.position.set(
-                (Math.random() - 0.5) * 400,
-                (Math.random() - 0.5) * 400,
-                (Math.random() - 0.5) * 400
-            );
-            this.scene.add(light);
-        }
-
-        // Lazer ışığı
-        this.laserLight = new THREE.SpotLight(0xa0a0ff, 0, 50, Math.PI / 6, 0.9, 1);
-        this.laserLight.penumbra = 0.5;
-        this.laserLight.decay = 2;
+        // Lazer Işığı (Başlangıçta kapalı)
+        this.laserLight = new THREE.SpotLight(0x00ffff, 0, 100, 0.1, 0.5, 1);
         this.scene.add(this.laserLight);
     }
 
     update(deltaTime) {
-        this.starTime += deltaTime * 0.001;
+        this.starTime += deltaTime;
+
+        // Arka planı yavaşça döndür
+        if (this.backgroundSphere) this.backgroundSphere.rotation.y += 0.0001;
         
-        if (this.stars && this.stars.material.uniforms.time) {
-            this.stars.material.uniforms.time.value = this.starTime;
-            this.stars.rotation.y += 0.0001 * deltaTime;
-            this.stars.rotation.x += 0.00005 * deltaTime;
-        }
-        
-        if (this.twinkleStars && this.twinkleStars.material.uniforms.time) {
-            this.twinkleStars.material.uniforms.time.value += 0.01 * deltaTime;
-        }
-        
-        if (this.backgroundSphere) {
-            this.backgroundSphere.rotation.y += 0.0003 * deltaTime;
-        }
-        
-        if (this.dustClouds) {
-            this.dustClouds.rotation.y += 0.00005 * deltaTime;
+        // Yanıp sönen yıldızları güncelle
+        if (this.twinkleStars) {
+            this.twinkleStars.material.uniforms.time.value = this.starTime;
         }
     }
 }

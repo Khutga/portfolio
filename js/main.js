@@ -4,7 +4,6 @@ import { Background } from './Background.js';
 import { Diamond } from './Diamond.js';
 import { UI } from './UI.js';
 import { Effects } from './Effects.js';
-import gsap from 'https://cdn.skypack.dev/gsap';
 
 class DiamondPortfolio {
     constructor() {
@@ -13,8 +12,7 @@ class DiamondPortfolio {
         this.diamond = new Diamond(this.sceneManager.scene);
         this.ui = new UI();
         
-        this.isZoomed = false;
-        this.selectedFaceCenter = null;
+        this.isSplitView = false;
         this.hoveredObject = null;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
@@ -24,19 +22,21 @@ class DiamondPortfolio {
     }
 
     init() {
-        // UI kapatma callback'i
         this.ui.setCloseCallback(() => this.resetView());
-        
-        // Event listeners
         window.addEventListener('mousemove', (e) => this.onMouseMove(e));
         window.addEventListener('click', (e) => this.onClick(e));
-        
-        // Animasyon başlat
         this.animate();
     }
 
     onMouseMove(event) {
-        if (this.isZoomed) return;
+        if (this.isSplitView) {
+            document.body.style.cursor = 'default';
+            if (this.hoveredObject) {
+                 Effects.hoverEffect(this.hoveredObject, false);
+                 this.hoveredObject = null;
+            }
+            return;
+        };
         
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -44,15 +44,11 @@ class DiamondPortfolio {
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
         
-        // İmleç değişimi
         document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
         
-        // Hover efekti
         if (intersects.length > 0) {
             if (this.hoveredObject !== intersects[0].object) {
-                if (this.hoveredObject) {
-                    Effects.hoverEffect(this.hoveredObject, false);
-                }
+                if (this.hoveredObject) Effects.hoverEffect(this.hoveredObject, false);
                 this.hoveredObject = intersects[0].object;
                 Effects.hoverEffect(this.hoveredObject, true);
             }
@@ -63,157 +59,70 @@ class DiamondPortfolio {
     }
 
     onClick(event) {
+        if (this.isSplitView) return; 
+
         this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
         
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
         
-        if (intersects.length > 0 && !this.isZoomed) {
-            const clickedFaceNormal = intersects[0].face.normal;
-            this.handleDiamondClick(intersects[0].object, clickedFaceNormal);
-        } else {
-            this.resetView();
+        if (intersects.length > 0) {
+            const hitPoint = intersects[0].point;
+            this.handleDiamondClick(intersects[0].object, hitPoint);
         }
     }
 
-    handleDiamondClick(object, inputNormal) {
+    handleDiamondClick(object, hitPoint) {
         const name = object.name;
         let content = this.getContentByName(name);
-        
         if (!content) return;
         
-        this.isZoomed = true;
-        this.diamond.isZoomed = true;
+        this.isSplitView = true;
         
-        // Yüzey merkezini hesapla
-        if (!object.geometry.boundingBox) object.geometry.computeBoundingBox();
-        const centerLocal = new THREE.Vector3();
-        object.geometry.boundingBox.getCenter(centerLocal);
-        const targetPos = centerLocal.clone().applyMatrix4(object.matrixWorld);
-        
-        // Dünya normali
-        const normalMatrix = new THREE.Matrix3().getNormalMatrix(object.matrixWorld);
-        const worldNormal = inputNormal.clone().applyMatrix3(normalMatrix).normalize();
-        
-        // Kamera pozisyonu
-        const distance = 0.6;
-        const cameraEndPos = targetPos.clone().add(worldNormal.multiplyScalar(distance));
-        
-        // Ekranı konumlandır
-        this.positionContentScreen(targetPos, worldNormal);
-        
-        // Lazer efekti
-        Effects.createLaserEffect(
+        if (this.hoveredObject) {
+            Effects.hoverEffect(this.hoveredObject, false);
+            this.hoveredObject = null;
+        }
+
+        // ARTIK HATA VERMEYECEK: Effects.js içinde bu fonksiyon var.
+        Effects.enterSplitView(
+            this.diamond,
             this.background.laserLight,
-            cameraEndPos,
-            targetPos,
-            this.sceneManager.contentScreen,
+            hitPoint,
+            this.ui,
             content.header,
-            content.body,
-            this.ui
+            content.body
         );
-        
-        // Kamera hareketi
-        gsap.to(this.sceneManager.controls.target, { 
-            x: targetPos.x, 
-            y: targetPos.y, 
-            z: targetPos.z, 
-            duration: 1.0, 
-            ease: "power2.inOut" 
-        });
-        
-        gsap.to(this.sceneManager.camera.position, {
-            x: cameraEndPos.x,
-            y: cameraEndPos.y,
-            z: cameraEndPos.z,
-            duration: 1.0,
-            ease: "power2.inOut",
-            onUpdate: () => this.sceneManager.camera.lookAt(targetPos)
-        });
-        
-        // UI panel göster
-        this.ui.showPanel(content.header, content.body);
-        this.selectedFaceCenter = targetPos;
+    }
+
+    resetView() {
+        if (!this.isSplitView) return;
+        this.isSplitView = false;
+
+        Effects.leaveSplitView(this.diamond, this.ui);
     }
 
     getContentByName(name) {
         const contentMap = {
-            'Face_Projects': {
-                header: "PROJELER",
-                body: "Hapkap: Stok Takip Uygulaması. TaxyMaxy: Refactoring Projesi. Flutter ile geliştirildi."
-            },
-            'Face_Experience': {
-                header: "DENEYİM",
-                body: "5 Yıllık Flutter ve Dart tecrübesi. Freelance ve kurumsal projelerde görev aldım."
-            },
-            'Face_About': {
-                header: "HAKKIMDA",
-                body: "Merhaba, ben kodun estetiğine önem veren bir geliştiriciyim."
-            },
-            'Face_Contact': {
-                header: "İLETİŞİM",
-                body: "email@ornek.com adresinden veya LinkedIn üzerinden ulaşabilirsiniz."
-            }
+            'Face_Projects': { header: "PROJELER", body: "Flutter ve Web tabanlı geliştirdiğim mobil uygulamalar, stok takip sistemleri ve refactoring projelerim." },
+            'Face_Experience': { header: "DENEYİM", body: "5 yılı aşkın süredir sektördeyim. Çeşitli ajanslarda ve freelance olarak kurumsal müşterilere hizmet verdim." },
+            'Face_About': { header: "HAKKIMDA", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
+            'Face_Contact': { header: "İLETİŞİM", body: "Benimle çalışmak veya tanışmak isterseniz LinkedIn üzerinden veya mail yoluyla ulaşabilirsiniz." }
         };
-        
         for (const key in contentMap) {
-            if (name.includes(key)) {
-                return contentMap[key];
-            }
+            if (name.includes(key)) return contentMap[key];
         }
         return null;
     }
 
-    positionContentScreen(targetPos, worldNormal) {
-        const contentScreen = this.sceneManager.contentScreen;
-        
-        contentScreen.position.copy(targetPos);
-        contentScreen.lookAt(targetPos.clone().add(worldNormal));
-        contentScreen.translateZ(0.02);
-        contentScreen.scale.set(0, 0, 0);
-        contentScreen.material.opacity = 0;
-    }
-
-    resetView() {
-        if (!this.isZoomed) return;
-        
-        this.isZoomed = false;
-        this.diamond.isZoomed = false;
-        this.hoveredObject = null;
-        
-        Effects.resetView(
-            this.sceneManager.contentScreen,
-            this.sceneManager.camera,
-            this.sceneManager.controls.target,
-            this.diamond.diamondGroup,
-            this.ui
-        );
-        
-        this.selectedFaceCenter = null;
-    }
-
     animate() {
         const deltaTime = this.clock.getDelta();
-        
-        // Arka plan güncelleme
         this.background.update(deltaTime);
-        
-        // Elmas dönüşü
-        this.diamond.rotate();
-        
-        // UI panel pozisyon güncelleme
-        if (this.isZoomed && this.selectedFaceCenter) {
-            this.ui.updatePanelPosition(this.selectedFaceCenter, this.sceneManager.camera);
-        }
-        
-        // Render
+        this.diamond.rotate(); 
         this.sceneManager.render();
-        
-        // Sonraki frame
         requestAnimationFrame(() => this.animate());
     }
 }
 
-// Uygulamayı başlat
 const app = new DiamondPortfolio();

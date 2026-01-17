@@ -1,78 +1,83 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #000;
+    background-color: #000005; /* Çok koyu lacivert/siyah */
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* SİYAH GEÇİŞ (Vignette) */
-.bottom-fade {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 40%;
-    background: linear-gradient(to top, #000000, transparent);
-    pointer-events: none;
-    z-index: 5;
-}
-
-/* BİLGİ PANELİ */
-#info-panel {
-    position: absolute;
+/* YENİ SAĞ PANEL TASARIMI */
+#side-panel {
+    position: fixed;
     top: 0;
-    left: 0;
-    width: 300px;
-    padding: 25px;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 15px;
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
-    color: white;
+    right: -50%;
+    width: 400px; /* Sabit genişlik daha şık durur */
+    height: 100vh;
+    background: rgba(10, 10, 20, 0.85); /* Buzlu cam efekti */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-left: 1px solid rgba(0, 255, 255, 0.3);
+    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.6);
+    color: #fff;
+    z-index: 1000;
+    transition: right 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#side-panel.active {
+    right: 0;
+}
+
+.content-wrapper {
+    padding: 60px 40px;
     opacity: 0;
-    transform: translate(-50%, -50%) scale(0.5);
-    pointer-events: none;
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 100;
-    text-align: center;
+    transform: translateX(30px);
+    transition: all 0.6s ease 0.4s;
 }
 
-#info-panel.active {
+#side-panel.active .content-wrapper {
     opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-    pointer-events: all;
+    transform: translateX(0);
 }
 
-#panel-title {
-    margin-top: 0;
+#side-title {
+    font-size: 2.5rem;
     font-weight: 300;
-    font-size: 2.2rem;
-    background: linear-gradient(45deg, #fff, #aaa);
+    margin: 0;
+    background: linear-gradient(90deg, #fff, #00ffff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
 }
 
-#close-btn {
+.separator {
+    width: 60px;
+    height: 3px;
+    background: #00ffff;
+    margin: 20px 0 30px 0;
+    box-shadow: 0 0 10px #00ffff;
+}
+
+#side-desc {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #cccccc;
+}
+
+#close-side-btn {
     position: absolute;
-    top: 20px;
-    right: 20px;
+    top: 30px;
+    right: 30px;
     background: none;
     border: none;
-    color: #fff;
-    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 2rem;
     cursor: pointer;
     transition: 0.3s;
 }
 
-#close-btn:hover {
-    color: #f00;
+#close-side-btn:hover {
+    color: #fff;
     transform: rotate(90deg);
-}
-
-#panel-desc {
-    color: #bbb;
-    line-height: 1.6;
-    margin: 20px 0;
 }

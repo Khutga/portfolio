@@ -1,56 +1,52 @@
+import * as THREE from 'three';
 import gsap from 'https://cdn.skypack.dev/gsap';
 
 export class Effects {
-    static createLaserEffect(laserLight, startPos, targetPos, contentScreen, headerText, bodyText, ui) {
+    // 1. SAHNEYİ İKİYE BÖLME (Giriş Efekti)
+    static enterSplitView(diamond, laserLight, hitPoint, ui, header, body) {
         const tl = gsap.timeline();
         
-        // İçerik ekranına doku yükle
-        contentScreen.material.map = ui.createContentTexture(headerText, bodyText);
-        contentScreen.material.needsUpdate = true;
+        // Lazer Konumu
+        laserLight.position.copy(hitPoint);
+        const bounceTarget = new THREE.Vector3(5, hitPoint.y + 2, 0); 
+        laserLight.target.position.copy(bounceTarget);
+        laserLight.target.updateMatrixWorld();
+
+        tl.addLabel("start")
+        // Lazer Parlasın
+          .to(laserLight, { intensity: 500, duration: 0.1, ease: "power2.in" }, "start")
         
-        // Lazer pozisyonu
-        laserLight.position.copy(startPos);
-        laserLight.target.position.copy(targetPos);
-        
-        // Animasyon
-        tl.to(laserLight, { intensity: 200, duration: 0.1, ease: "power2.in" })
-          .to(contentScreen.scale, { x: 0.7, y: 0.7, z: 0.7, duration: 0.4, ease: "back.out(1.7)" }, "<")
-          .to(contentScreen.material, { opacity: 1, duration: 0.2 }, "<")
-          .to(laserLight, { intensity: 0, duration: 0.4, ease: "power2.out" });
+        // Panel Açılsın
+          .to(laserLight, { intensity: 0, duration: 0.4, ease: "power2.out" }, "start+=0.1")
+          .call(() => ui.showPanel(header, body), null, "start+=0.2") 
+
+        // Elmas Sola Kaysın ve Hızlansın
+          .to(diamond.diamondGroup.position, { x: -2.5, duration: 1.2, ease: "power3.inOut" }, "start")
+          .to(diamond, { rotationSpeed: 0.02, duration: 1.2, ease: "power2.in" }, "start"); 
         
         return tl;
     }
 
-    static resetView(contentScreen, camera, controls, diamondGroup, ui) {
+    // 2. NORMAL GÖRÜNÜME DÖNÜŞ (Çıkış Efekti)
+    static leaveSplitView(diamond, ui) {
         const tl = gsap.timeline();
+
+        // Paneli kapat
+        tl.call(() => ui.hidePanel())
         
-        // Ekranı kapat
-        tl.to(contentScreen.scale, { x: 0, y: 0, z: 0, duration: 0.3, ease: "back.in(2)" })
-          .to(contentScreen.material, { opacity: 0, duration: 0.2 }, "<");
-        
-        // UI panelini gizle
-        ui.hidePanel();
-        
-        // Kamera reset
-        tl.to(camera.position, { x: 0, y: 0, z: 5, duration: 1.0, ease: "power2.inOut" })
-          .to(controls.target, { x: 0, y: 0, z: 0, duration: 1.0, ease: "power2.inOut" }, "<");
-        
-        // Elmas dönüşü
-        tl.to(diamondGroup.rotation, { 
-            y: diamondGroup.rotation.y + Math.PI * 2, 
-            duration: 0.8, 
-            ease: "back.out(1.0)" 
-        }, "-=0.8");
+        // Elması merkeze çek ve yavaşlat
+          .to(diamond.diamondGroup.position, { x: 0, duration: 1.0, ease: "power3.inOut" })
+          .to(diamond, { rotationSpeed: 0.002, duration: 1.0, ease: "power2.out" }, "<");
         
         return tl;
     }
 
+    // 3. HOVER EFEKTİ
     static hoverEffect(object, isHovering) {
         if (!object) return;
-        
         if (isHovering) {
-            object.material.emissive = new THREE.Color(0x5050ff);
-            gsap.to(object.material, { emissiveIntensity: 0.3, duration: 0.2 });
+            gsap.to(object.material, { emissiveIntensity: 0.5, duration: 0.3 });
+            object.material.emissive = new THREE.Color(0x00ffff);
         } else {
             gsap.to(object.material, { emissiveIntensity: 0, duration: 0.5 });
         }
