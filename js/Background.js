@@ -14,44 +14,44 @@ export class Background {
 
     init() {
         this.createNebula();
-        this.createStarSystem();
+        this.createColoredStars(); 
         this.createDustClouds();
         this.createTwinklingStars();
-        this.createLights();
+        this.createLights(); 
     }
 
     createNebula() {
-        // Devasa bir küre oluşturup içine giriyoruz
+        // Devasa bir küre (Skybox)
         const sphereGeo = new THREE.SphereGeometry(800, 60, 40);
-        sphereGeo.scale(-1, 1, 1); // İçini görelim diye ters çeviriyoruz
+        sphereGeo.scale(-1, 1, 1); 
 
         const canvas = document.createElement('canvas');
         canvas.width = 2048;
         canvas.height = 1024;
         const ctx = canvas.getContext('2d');
         
-        // Zengin, Derin Uzay Gradyanı
+        // --- DAHA MODERN VE DERİN BİR UZAY GRADYANI ---   
         const gradient = ctx.createRadialGradient(
             canvas.width / 2, canvas.height / 2, 0,
             canvas.width / 2, canvas.height / 2, canvas.width
         );
         
-        // Renk Paleti: Siyah -> Derin Mor -> Lacivert -> Siyah
-        gradient.addColorStop(0.0, "#050011"); // Merkez (Çok koyu mor)
-        gradient.addColorStop(0.4, "#0a0022"); // Orta (Mor)
-        gradient.addColorStop(0.8, "#000510"); // Dış (Lacivert)
-        gradient.addColorStop(1.0, "#000000"); // En dış (Tam Siyah)
+        // Renk Paleti: Siyah -> Gece Mavisi -> Derin Mor -> Siyah
+        gradient.addColorStop(0.0, "#0b1026"); // Merkez (Hafif aydınlık lacivert)
+        gradient.addColorStop(0.3, "#050714"); // Orta (Koyu)
+        gradient.addColorStop(0.7, "#000000"); // Dış (Tam Siyah)
+        gradient.addColorStop(1.0, "#000000"); 
         
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Biraz "Yıldız Tozu" (Noise) ekleyelim ki dümdüz durmasın
-        for (let i = 0; i < 5000; i++) {
+        // Yıldız Tozu (Noise) - Daha ince taneli
+        for (let i = 0; i < 10000; i++) {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
-            const alpha = Math.random() * 0.3;
-            ctx.fillStyle = `rgba(100, 100, 255, ${alpha})`;
-            ctx.fillRect(x, y, 2, 2);
+            const alpha = Math.random() * 0.2; // Çok silik
+            ctx.fillStyle = `rgba(150, 180, 255, ${alpha})`; // Mavimsi toz
+            ctx.fillRect(x, y, 1, 1);
         }
 
         const bgTexture = new THREE.CanvasTexture(canvas);
@@ -62,26 +62,28 @@ export class Background {
             new THREE.MeshBasicMaterial({ 
                 map: bgTexture,
                 side: THREE.BackSide,
-                fog: false // Sisten etkilenmesin
+                fog: false
             })
         );
         
         this.scene.add(this.backgroundSphere);
     }
 
-    createStarSystem() {
-        // Uzaktaki sabit yıldızlar
-        const stars = this.createStars(4000);
-        this.stars = stars;
-        this.scene.add(stars);
-    }
-
-    createStars(count) {
+    // --- YENİ: RENKLİ YILDIZLAR SİSTEMİ ---
+    createColoredStars() {
+        const count = 4000;
         const positions = new Float32Array(count * 3);
+        const colors = new Float32Array(count * 3); // Renk verisi eklendi
         const sizes = new Float32Array(count);
         
+        const colorPalette = [
+            new THREE.Color(0xffffff), // Beyaz
+            new THREE.Color(0xaaddff), // Mavi-Beyaz (Sıcak)
+            new THREE.Color(0xffddaa)  // Sarı-Beyaz (Soğuk)
+        ];
+
         for(let i = 0; i < count; i++) {
-            const r = 400 + Math.random() * 400; // Yarıçap
+            const r = 400 + Math.random() * 400;
             const theta = 2 * Math.PI * Math.random();
             const phi = Math.acos(2 * Math.random() - 1);
             
@@ -89,29 +91,35 @@ export class Background {
             positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
             positions[i*3+2] = r * Math.cos(phi);
             
+            // Rastgele renk seçimi
+            const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+            colors[i*3] = color.r;
+            colors[i*3+1] = color.g;
+            colors[i*3+2] = color.b;
+
             sizes[i] = 0.5 + Math.random() * 1.5;
         }
         
         const geo = new THREE.BufferGeometry();
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geo.setAttribute('color', new THREE.BufferAttribute(colors, 3)); // Shader için renk
         geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
         
-        // Basit ve performanslı yıldız materyali
         const mat = new THREE.PointsMaterial({
             size: 1,
+            vertexColors: true, // Renkleri aktif et
             sizeAttenuation: true,
-            color: 0xffffff,
             transparent: true,
-            opacity: 0.8,
+            opacity: 0.9,
             fog: false
         });
         
-        return new THREE.Points(geo, mat);
+        this.stars = new THREE.Points(geo, mat);
+        this.scene.add(this.stars);
     }
 
     createDustClouds() {
-        // Sahneye derinlik katan hafif toz bulutları
-        const particleCount = 500;
+        const particleCount = 600;
         const positions = new Float32Array(particleCount * 3);
         
         for(let i = 0; i < particleCount * 3; i += 3) {
@@ -128,10 +136,10 @@ export class Background {
         geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
         
         const mat = new THREE.PointsMaterial({
-            size: 4,
-            color: 0x442266, // Morumsu toz
+            size: 5,
+            color: 0x224466, // Daha soğuk, mavi/mor toz
             transparent: true,
-            opacity: 0.15,
+            opacity: 0.1,
             blending: THREE.AdditiveBlending,
             depthWrite: false
         });
@@ -141,8 +149,7 @@ export class Background {
     }
 
     createTwinklingStars() {
-        // HATA DÜZELTİLDİ: Shader kodundaki eksik değişkenler tanımlandı
-        const count = 150;
+        const count = 200;
         const positions = new Float32Array(count * 3);
         const twinkleData = new Float32Array(count * 2);
         
@@ -155,8 +162,8 @@ export class Background {
             positions[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
             positions[i*3+2] = r * Math.cos(phi);
             
-            twinkleData[i*2] = Math.random() * Math.PI * 2; // Faz
-            twinkleData[i*2+1] = 0.5 + Math.random();       // Hız
+            twinkleData[i*2] = Math.random() * Math.PI * 2;
+            twinkleData[i*2+1] = 0.5 + Math.random();
         }
         
         const geo = new THREE.BufferGeometry();
@@ -166,37 +173,29 @@ export class Background {
         const mat = new THREE.ShaderMaterial({
             uniforms: {
                 time: { value: 0 },
-                baseSize: { value: 3.0 }
+                baseSize: { value: 4.0 } // Biraz daha büyük parıltılar
             },
             vertexShader: `
-                uniform float time;      // <-- EKLENDİ
-                uniform float baseSize;  // <-- EKLENDİ
-                
-                attribute vec2 twinkleData; // x: faz, y: hız
+                uniform float time;
+                uniform float baseSize;
+                attribute vec2 twinkleData;
                 varying float vAlpha;
-                
                 void main() {
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                     gl_Position = projectionMatrix * mvPosition;
-                    
-                    // Yanıp sönme efekti (Sinüs dalgası)
                     float twinkle = sin(time * twinkleData.y + twinkleData.x);
-                    vAlpha = 0.5 + 0.5 * twinkle; // 0 ile 1 arasında değişsin
-                    
+                    vAlpha = 0.4 + 0.6 * twinkle; 
                     gl_PointSize = baseSize * (300.0 / -mvPosition.z);
                 }
             `,
             fragmentShader: `
                 varying float vAlpha;
-                
                 void main() {
-                    // Yuvarlak nokta çizimi
                     vec2 coord = gl_PointCoord - vec2(0.5);
                     if(length(coord) > 0.5) discard;
-                    
-                    // Merkezden dışa doğru sönükleşen parlama
                     float strength = 1.0 - (length(coord) * 2.0);
-                    gl_FragColor = vec4(1.0, 1.0, 1.0, vAlpha * strength);
+                    // Hafif mavimsi beyaz parıltı
+                    gl_FragColor = vec4(0.9, 0.95, 1.0, vAlpha * strength); 
                 }
             `,
             transparent: true,
@@ -209,27 +208,58 @@ export class Background {
     }
 
     createLights() {
-        // Sahneyi aydınlatan loş ışıklar
-        const ambientLight = new THREE.AmbientLight(0x111122, 1.5);
+        // --- 1. ORTAM IŞIĞI (Kısık) ---
+        // Uzay karanlıktır. Kontrast için bunu kısıyoruz.
+        const ambientLight = new THREE.AmbientLight(0x050510, 0.4); 
         this.scene.add(ambientLight);
 
-        // Elması parlatan ana ışık
-        const dirLight = new THREE.DirectionalLight(0xaaccff, 1.0);
-        dirLight.position.set(50, 50, 100);
+        // --- 2. PREMIUM GÜNEŞ (MAVİ/BEYAZ DEV) ---
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const context = canvas.getContext('2d');
+        
+        // Radyal Gradyan: Kör edici beyaz -> Açık Mavi -> Koyu Mavi -> Şeffaf
+        const gradient = context.createRadialGradient(64, 64, 0, 64, 64, 64);
+        gradient.addColorStop(0.0, 'rgba(255, 255, 255, 1)');   // Çekirdek (Saf Beyaz)
+        gradient.addColorStop(0.15, 'rgba(200, 240, 255, 1)');  // İç Hare (Buz Mavisi)
+        gradient.addColorStop(0.4, 'rgba(0, 100, 255, 0.4)');   // Dış Hare (Elektrik Mavisi)
+        gradient.addColorStop(1.0, 'rgba(0, 0, 0, 0)');         // Bitiş
+        
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, 128, 128);
+
+        const sunTexture = new THREE.CanvasTexture(canvas);
+
+        const sunMaterial = new THREE.SpriteMaterial({ 
+            map: sunTexture, 
+            color: 0xffffff, 
+            blending: THREE.AdditiveBlending,
+            transparent: true
+        });
+
+        this.sunMesh = new THREE.Sprite(sunMaterial);
+        // Güneşi biraz daha büyüttük ve konumunu ayarladık
+        this.sunMesh.scale.set(18, 18, 1); 
+        this.sunMesh.position.set(0, 15, -12); 
+        this.scene.add(this.sunMesh);
+
+        // --- 3. ANA IŞIK KAYNAĞI (Güçlü) ---
+        // Elmasın parlaması için güçlü bir ışık
+        const dirLight = new THREE.DirectionalLight(0xffffff, 4.5);
+        dirLight.position.copy(this.sunMesh.position);
+        dirLight.castShadow = true;
         this.scene.add(dirLight);
 
-        // Lazer Işığı (Başlangıçta kapalı)
-        this.laserLight = new THREE.SpotLight(0x00ffff, 0, 100, 0.1, 0.5, 1);
+        // --- 4. LAZER IŞIĞI KAYNAĞI ---
+        this.laserLight = new THREE.SpotLight(0x00ffff, 0, 200, 0.2, 1, 0.5);
+        this.laserLight.position.copy(this.sunMesh.position);
         this.scene.add(this.laserLight);
     }
 
     update(deltaTime) {
         this.starTime += deltaTime;
-
-        // Arka planı yavaşça döndür
-        if (this.backgroundSphere) this.backgroundSphere.rotation.y += 0.0001;
-        
-        // Yanıp sönen yıldızları güncelle
+        if (this.backgroundSphere) this.backgroundSphere.rotation.y += 0.00015;
         if (this.twinkleStars) {
             this.twinkleStars.material.uniforms.time.value = this.starTime;
         }

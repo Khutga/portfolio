@@ -9,17 +9,16 @@ body {
 #side-panel {
     position: fixed;
     top: 0;
-    right: -50%;
-    width: 400px; /* Sabit genişlik daha şık durur */
+    right: -85%; /* %80 genişlik için biraz daha dışarıdan başlasın */
+    width: 80vw; /* İSTEĞİNİZ: Ekranın %80'ini kaplasın */
     height: 100vh;
-    background: rgba(10, 10, 20, 0.85); /* Buzlu cam efekti */
+    background: rgba(5, 5, 10, 0.95); /* Çok daha koyu ve net zemin */
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(0, 255, 255, 0.3);
-    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.6);
+    border-left: 2px solid rgba(0, 255, 255, 0.6);
+    box-shadow: -50px 0 100px rgba(0, 0, 0, 0.9);
     color: #fff;
     z-index: 1000;
-    transition: right 0.8s cubic-bezier(0.19, 1, 0.22, 1);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -80,4 +79,107 @@ body {
 #close-side-btn:hover {
     color: #fff;
     transform: rotate(90deg);
+}
+
+.diamond-menu-btn {
+    position: fixed;
+    top: 40px;
+    left: 40px;
+    width: 50px;
+    height: 50px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00ffff;
+    transform: rotate(45deg); /* Kareyi elmas şekline çevirir */
+    z-index: 2001; /* En üstte */
+    cursor: pointer;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* İçindeki ikon (3 çizgi / hamburger) */
+.diamond-menu-btn::after {
+    content: '';
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    /* Basit bir menü ikonu oluşturuyoruz */
+    background: repeating-linear-gradient(
+        transparent,
+        transparent 4px,
+        #fff 4px,
+        #fff 6px
+    );
+    transform: rotate(-45deg); /* İkon düz dursun diye geri çevir */
+    transition: all 0.3s;
+}
+
+.diamond-menu-btn:hover {
+    background: rgba(0, 255, 255, 0.2);
+    box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+    transform: rotate(225deg); /* Hover'da havalı dönüş */
+}
+
+.nav-menu {
+    position: fixed;
+    top: 110px; /* Butonun hemen altı */
+    left: 45px; /* Hizalama */
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    
+    /* Gizleme Ayarları */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-menu.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.nav-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.7);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: left;
+    padding: 10px;
+    border-left: 2px solid transparent;
+    transition: 0.3s;
+    text-shadow: 0 0 5px rgba(0,0,0,0.8);
+}
+
+.nav-btn:hover {
+    color: #00ffff;
+    border-left: 2px solid #00ffff;
+    padding-left: 20px;
+    background: linear-gradient(90deg, rgba(0,255,255,0.1), transparent);
+}
+
+.nav-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: #00ffff;
+    transition: width 0.3s ease;
+    transform: translateY(-50%);
+}
+
+.nav-btn:hover::before {
+    width: 15px; /* Hoverda beliren çizgi */
 }
