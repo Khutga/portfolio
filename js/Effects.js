@@ -21,7 +21,7 @@ export class Effects {
 
         // 3. Materyal (Neon Parlaması için AdditiveBlending)
         const material = new THREE.MeshBasicMaterial({
-            color: 0xffd700,       // Neon Camgöbeği
+            color: 0x00ffaa,       
             transparent: true,
             opacity: 0,            // Başlangıçta görünmez
             blending: THREE.AdditiveBlending, // Parlama efekti verir

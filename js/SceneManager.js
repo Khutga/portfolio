@@ -17,7 +17,7 @@ export class SceneManager {
     init() {
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        this.renderer.toneMappingExposure = 1.2;
+        this.renderer.toneMappingExposure = 1.6;
         document.body.appendChild(this.renderer.domElement);
 
         // Kamera mesafesi

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import gsap from 'https://cdn.skypack.dev/gsap';
 import { SceneManager } from './SceneManager.js';
 import { Background } from './Background.js';
 import { Diamond } from './Diamond.js';
@@ -72,6 +73,7 @@ class DiamondPortfolio {
         this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
         // --------------------------------------------------
 
+
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
 
@@ -87,6 +89,18 @@ class DiamondPortfolio {
             Effects.hoverEffect(this.hoveredObject, false);
             this.hoveredObject = null;
         }
+        const x = (event.clientX / window.innerWidth) - 0.5;
+        const y = (event.clientY / window.innerHeight) - 0.5;
+
+        gsap.to(this.diamond.diamondGroup.rotation, {
+            x: 0.3 + (y * 0.4), // 0.3 olan başlangıç açısını fareye göre esnetir
+            z: (x * 0.4),       // Sağa sola yatma etkisi
+            duration: 0.8,
+            ease: "power2.out"
+        });
+        
+        
+        
     }
 
     onClick(event) {
@@ -163,6 +177,7 @@ class DiamondPortfolio {
         this.diamond.rotate();
         this.sceneManager.render();
         requestAnimationFrame(() => this.animate());
+
     }
 }
 
