@@ -31,11 +31,8 @@ class DiamondPortfolio {
     }
 
     handleMenuNavigation(faceName) {
-        // Eğer zaten açıksa önce kapat, sonra yeni sayfayı aç (veya direkt geçiş efekti yap)
-        // Şimdilik temiz olması için resetleyip açıyoruz:
         if (this.isSplitView) {
             this.resetView();
-            // Reset animasyonu 1sn sürüyor, bitince yenisini aç
             setTimeout(() => this.triggerSection(faceName), 1200);
         } else {
             this.triggerSection(faceName);
@@ -43,16 +40,11 @@ class DiamondPortfolio {
     }
 
     triggerSection(faceName) {
-        // 1. Elması o yüze çevir
         this.diamond.alignFaceToCamera(faceName, (targetMesh) => {
-            // 2. Çevirme bitti, şimdi efekti başlat
-            if (!targetMesh) return; // Hata kontrolü
-
-            // Hedef noktasını mesh'in dünya koordinatından alalım
+            if (!targetMesh) return; 
             const hitPoint = new THREE.Vector3();
             targetMesh.getWorldPosition(hitPoint);
 
-            // Simüle edilmiş bir "tıklama" gibi davranıyoruz
             this.handleDiamondClick(targetMesh, hitPoint);
         });
     }
@@ -67,11 +59,9 @@ class DiamondPortfolio {
             return;
         };
 
-        // --- GÜNCELLENEN KISIM (Tıklama Hatasını Çözer) ---
         const rect = this.sceneManager.renderer.domElement.getBoundingClientRect();
         this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        // --------------------------------------------------
 
 
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
@@ -93,8 +83,8 @@ class DiamondPortfolio {
         const y = (event.clientY / window.innerHeight) - 0.5;
 
         gsap.to(this.diamond.diamondGroup.rotation, {
-            x: 0.3 + (y * 0.4), // 0.3 olan başlangıç açısını fareye göre esnetir
-            z: (x * 0.4),       // Sağa sola yatma etkisi
+            x: 0.3 + (y * 0.4), 
+            z: (x * 0.4),       
             duration: 0.8,
             ease: "power2.out"
         });
@@ -106,11 +96,9 @@ class DiamondPortfolio {
     onClick(event) {
         if (this.isSplitView) return;
 
-        // --- GÜNCELLENEN KISIM (Burada da aynı düzeltme şart) ---
         const rect = this.sceneManager.renderer.domElement.getBoundingClientRect();
         this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
-        // --------------------------------------------------------
 
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
@@ -133,7 +121,6 @@ class DiamondPortfolio {
             this.hoveredObject = null;
         }
 
-        // GÜNCELLENDİ: Artık sahne ve güneş pozisyonunu da gönderiyoruz
         Effects.enterSplitView(
             this.diamond,
             this.background.laserLight,
@@ -143,7 +130,7 @@ class DiamondPortfolio {
             content.body,
             this.background.sunMesh.position,
             this.sceneManager.scene,
-            this.sceneManager.camera,   // <-- YENİ
+            this.sceneManager.camera,   
             this.sceneManager.controls
         );
     }
@@ -154,7 +141,7 @@ class DiamondPortfolio {
         Effects.leaveSplitView(
             this.diamond,
             this.ui,
-            this.sceneManager.controls // <-- KRİTİK EKLEME
+            this.sceneManager.controls 
         );
     }
 

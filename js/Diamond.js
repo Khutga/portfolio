@@ -62,63 +62,72 @@ export class Diamond {
     }
 
     addLabelToFace(mesh) {
-        const nameMap = {
-            'Face_Projects': 'Projelerim',
-            'Face_Experience': 'Deneyim',
-            'Face_About': 'Hakkında',
-            'Face_Contact': 'İletişim'
-        };
+    const nameMap = {
+        'Face_Projects': 'PROJELER',
+        'Face_Experience': 'DENEYİM',
+        'Face_About': 'HAKKIMDA',
+        'Face_Contact': 'İLETİŞİM'
+    };
 
-        const labelText = nameMap[mesh.name];
-        if (!labelText) return;
+    const labelText = nameMap[mesh.name];
+    if (!labelText) return;
 
-        const canvas = document.createElement('canvas');
-        canvas.width = 1024;
-        canvas.height = 512;
-        const context = canvas.getContext('2d');
+    const canvas = document.createElement('canvas');
+    canvas.width = 1024;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
 
-        context.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        context.font = "Bold 100px 'Segoe UI', sans-serif";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
+    const fontSize = 70;
+    ctx.font = `900 ${fontSize}px 'Inter', 'Segoe UI', sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.letterSpacing = "8px"; 
 
-        context.shadowColor = "#00ffff";
-        context.shadowBlur = 30;
+    ctx.shadowColor = "rgba(0, 0, 0, 1)";
+    ctx.shadowBlur = 20;
+    ctx.lineWidth = 12;
+    ctx.strokeStyle = "rgba(0, 0, 0, 0.5)";
+    ctx.strokeText(labelText, canvas.width / 2, canvas.height / 2);
 
-        context.fillStyle = "rgba(255, 255, 255, 1)";
-        context.fillText(labelText, canvas.width / 2, canvas.height / 2);
+    ctx.shadowColor = "rgba(0, 255, 255, 1)";
+    ctx.shadowBlur = 50;
+    ctx.fillStyle = "rgba(0, 255, 255, 0.8)";
+    ctx.fillText(labelText, canvas.width / 2, canvas.height / 2);
 
-        context.lineWidth = 3;
-        context.strokeStyle = "rgba(0, 255, 255, 0.8)";
-        context.strokeText(labelText, canvas.width / 2, canvas.height / 2);
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "rgba(255, 255, 255, 1)";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText(labelText, canvas.width / 2, canvas.height / 2);
 
-        const texture = new THREE.CanvasTexture(canvas);
-        texture.needsUpdate = true;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.magFilter = THREE.LinearFilter;
+    texture.minFilter = THREE.LinearMipmapLinearFilter;
+    texture.anisotropy = 16; 
+    texture.needsUpdate = true;
 
-        const spriteMaterial = new THREE.SpriteMaterial({
-            map: texture,
-            transparent: true,
-            color: 0xffffff,
-            depthTest: false,
-            depthWrite: false,
-            blending: THREE.AdditiveBlending
-        });
+    const spriteMaterial = new THREE.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 1.0, 
+        depthTest: false,
+        depthWrite: false,
+        blending: THREE.NormalBlending 
+    });
 
-        const sprite = new THREE.Sprite(spriteMaterial);
+    const sprite = new THREE.Sprite(spriteMaterial);
+    sprite.scale.set(2.5, 1.25, 1);
+    sprite.raycast = () => { };
 
-        sprite.scale.set(2, 1, 1);
+    mesh.geometry.computeBoundingSphere();
+    const center = mesh.geometry.boundingSphere.center;
+    const normal = center.clone().normalize();
 
-        sprite.raycast = () => { };
+    sprite.position.copy(center).add(normal.multiplyScalar(0.25));
 
-        mesh.geometry.computeBoundingSphere();
-        const center = mesh.geometry.boundingSphere.center;
-        const normal = center.clone().normalize();
-
-        sprite.position.copy(center).add(normal.multiplyScalar(0.15));
-
-        mesh.add(sprite);
-    }
+    mesh.add(sprite);
+}
 
     createEnergyRing() {
         const particleCount = 200;
@@ -233,15 +242,16 @@ export class Diamond {
         this.diamondGroup.position.y = floatY;
 
         if (this.energyRing) {
-            this.energyRing.rotation.y += 0.005;
-            this.energyRing.position.y = floatY;
+        this.energyRing.rotation.y += 0.005;
+        
+        this.energyRing.position.copy(this.diamondGroup.position); 
 
-            this.energyRing.rotation.z = Math.sin(Date.now() * 0.001) * 0.10;
+        this.energyRing.rotation.z = Math.sin(Date.now() * 0.001) * 0.10;
+        
+        if (this.energyRing.material.opacity > 0.01) {
             const breathing = (Math.sin(currentTime * 0.002) * 0.5) + 0.5;
-
             this.energyRing.material.opacity = 0.15 + (breathing * 0.3);
-
-            this.energyRing.material.color.g = 0.7 + (breathing * 0.7);
         }
+    }
     }
 }
