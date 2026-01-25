@@ -84,9 +84,9 @@ export class Effects {
                 ease: "power3.inOut"
             }, "start")
             .to(diamond.diamondGroup.scale, {
-                x: 0.35,
+                x: 0.25,
                 y: 0.35,
-                z: 0.35,
+                z: 0.25,
                 duration: 1.2,
                 ease: "power3.inOut"
             }, "start")
