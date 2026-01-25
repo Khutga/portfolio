@@ -1,15 +1,15 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #000005; 
+    background-color: #000005;
     font-family: 'Segoe UI', sans-serif;
 }
 
 #side-panel {
     position: fixed;
     top: 0;
-    right: -85%; 
-    width: 80vw; 
+    right: -85%;
+    width: 80vw;
     height: 100vh;
     background: rgba(5, 5, 15, 0.95);
     backdrop-filter: blur(25px);
@@ -20,7 +20,7 @@ body {
     z-index: 1000;
     overflow-y: auto;
     overflow-x: hidden;
-    display: block; 
+    display: block;
     transition: right 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
@@ -84,7 +84,7 @@ body {
     background: rgba(0, 0, 0, 0.6);
     border: 2px solid #00ffff;
     transform: rotate(45deg);
-    z-index: 2001; 
+    z-index: 2001;
     cursor: pointer;
     transition: all 0.4s ease;
     box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
@@ -98,31 +98,29 @@ body {
     position: absolute;
     width: 24px;
     height: 24px;
-    background: repeating-linear-gradient(
-        transparent,
-        transparent 4px,
-        #fff 4px,
-        #fff 6px
-    );
-    transform: rotate(-45deg); 
+    background: repeating-linear-gradient(transparent,
+            transparent 4px,
+            #fff 4px,
+            #fff 6px);
+    transform: rotate(-45deg);
     transition: all 0.3s;
 }
 
 .diamond-menu-btn:hover {
     background: rgba(0, 255, 255, 0.2);
     box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
-    transform: rotate(225deg);  
+    transform: rotate(225deg);
 }
 
 .nav-menu {
     position: fixed;
-    top: 110px; 
-    left: 45px; 
+    top: 110px;
+    left: 45px;
     z-index: 2000;
     display: flex;
     flex-direction: column;
     gap: 15px;
-    
+
     opacity: 0;
     visibility: hidden;
     transform: translateY(-20px);
@@ -149,22 +147,22 @@ body {
     padding: 10px;
     border-left: 2px solid transparent;
     transition: 0.3s;
-    text-shadow: 0 0 5px rgba(0,0,0,0.8);
-    position: relative; 
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    position: relative;
 }
 
 .nav-btn:hover {
     color: #00ffff;
     border-left: 2px solid #00ffff;
     padding-left: 20px;
-    background: linear-gradient(90deg, rgba(0,255,255,0.1), transparent);
+    background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), transparent);
 }
 
 .nav-btn::before {
     content: '';
     position: absolute;
-    bottom: 0; 
-    left: 10px; 
+    bottom: 0;
+    left: 10px;
     width: 0;
     height: 1px;
     background: #00ffff;
@@ -172,7 +170,7 @@ body {
 }
 
 .nav-btn:hover::before {
-    width: 30px; 
+    width: 30px;
 }
 
 #side-panel::-webkit-scrollbar {
@@ -353,33 +351,36 @@ body {
 }
 
 @media (max-width: 768px) {
-    #side-panel { width: 100vw; right: -100%; }
-    .details-grid { grid-template-columns: 1fr; }
-    .main-title { font-size: 2rem; }
+    #side-panel {
+        width: 100vw;
+        right: -100%;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .main-title {
+        font-size: 2rem;
+    }
 }
 
 .hero-name {
-    font-size: 6rem; 
-    font-weight: 900; 
+
+    font-size: 5em;
+    font-weight: 900;
     line-height: 0.85;
-    letter-spacing: -5px;
+    letter-spacing: -3px;
     text-transform: uppercase;
     margin: 0 0 10px 0;
-    
-    background: linear-gradient(
-        180deg, 
-        #ffffff 0%, 
-        #ffffff 45%, 
-        #00ffff 50%, 
-        #008888 100%
-    );
+
+
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    filter: 
-        drop-shadow(0 0 30px rgba(0, 255, 255, 0.15))
-        drop-shadow(0 0 5px rgba(0, 255, 255, 0.3));
-    
+    -webkit-text-fill-color: #00ffffb2;
+
+    filter:
+        drop-shadow(0 0 30px rgba(0, 255, 255, 0.15)) drop-shadow(0 0 5px rgba(0, 255, 255, 0.3));
+
     transform: skewX(-5deg);
     display: inline-block;
     position: relative;
@@ -392,7 +393,7 @@ body {
     gap: 15px;
     margin-top: 15px;
     padding: 8px 16px;
-    background: rgba(0, 255, 255, 0.03); 
+    background: rgba(0, 255, 255, 0.03);
     border: 1px solid rgba(0, 255, 255, 0.1);
     border-radius: 4px;
     position: relative;
@@ -443,14 +444,32 @@ body {
 }
 
 @keyframes badge-pulse {
-    0% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.2); opacity: 0.7; }
-    100% { transform: scale(1); opacity: 1; }
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.2);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }
 
 @keyframes badge-ripple {
-    0% { transform: scale(1); opacity: 0.5; }
-    100% { transform: scale(3); opacity: 0; }
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
 }
 
 .hero-line {
@@ -480,6 +499,7 @@ body {
     border-radius: 4px;
     transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
+
 .block-label {
     font-family: 'Courier New', monospace;
     font-size: 0.75rem;
@@ -487,7 +507,7 @@ body {
     letter-spacing: 6px;
     opacity: 0.6;
     margin-bottom: 25px;
-        margin-top: 25px;
+    margin-top: 25px;
 
     display: flex;
     align-items: center;
@@ -507,6 +527,7 @@ body {
     box-shadow: 0 0 40px rgba(0, 255, 255, 0.15);
     transform: translateY(-8px) scale(1.02);
 }
+
 
 .matrix-head {
     font-family: 'Courier New', monospace;
@@ -547,7 +568,7 @@ body {
     bottom: 1px;
     left: 0;
     width: 100%;
-    height: 5%; 
+    height: 5%;
     background: rgba(0, 255, 255, 0.2);
     z-index: -1;
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
@@ -561,16 +582,17 @@ body {
 }
 
 .highlight:hover::after {
-    height: 100%; 
+    height: 100%;
     background: rgba(0, 255, 255, 0.15);
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
+
 .pill {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: rgba(255, 255, 255, 0.6);
     padding: 6px 18px;
-    border-radius: 2px; 
+    border-radius: 2px;
     font-family: 'Courier New', monospace;
     font-size: 0.75rem;
     transition: 0.3s;
@@ -586,8 +608,13 @@ body {
 }
 
 @keyframes scan-line {
-    0% { left: -100%; }
-    100% { left: 100%; }
+    0% {
+        left: -100%;
+    }
+
+    100% {
+        left: 100%;
+    }
 }
 
 #side-panel::-webkit-scrollbar-thumb {

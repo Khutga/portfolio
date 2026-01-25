@@ -22,7 +22,7 @@ export const Skills = {
                 </p>
             </section>
 
-            <section class="skills-block">
+          <!--  <section class="skills-block">
                 <div class="block-label">|| PROFESSIONAL EXPERIENCE</div>
                 <div class="matrix-grid">
                     <div class="matrix-item">
@@ -47,7 +47,7 @@ export const Skills = {
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <section class="skills-block">
                 <div class="block-label">|| TECHNICAL MATRIX</div>
