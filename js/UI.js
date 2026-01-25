@@ -33,10 +33,10 @@ createNavMenu() {
         menuContainer.className = 'nav-menu'; 
 
         const items = [
-            { label: 'PROJELER', id: 'Face_Projects' },
-            { label: 'DENEYİM', id: 'Face_Experience' },
-            { label: 'HAKKIMDA', id: 'Face_About' },
-            { label: 'İLETİŞİM', id: 'Face_Contact' }
+            { label: 'PROJECTS', id: 'Face_Projects' },
+            { label: 'SKILLS', id: 'Face_Experience' },
+            { label: 'ABOUT', id: 'Face_About' },
+            { label: 'CONTACT', id: 'Face_Contact' }
         ];
 
         items.forEach(item => {
@@ -62,9 +62,9 @@ createNavMenu() {
         this.onClose = callback;
     }
 
-    showPanel(header, text) {
+    showPanel(header, htmlContent) {
         if (this.titleEl) this.titleEl.innerText = header;
-        if (this.descEl) this.descEl.innerText = text;
+        if (this.descEl) this.descEl.innerHTML = htmlContent;
         if (this.sidePanel) this.sidePanel.classList.add('active');
     }
 

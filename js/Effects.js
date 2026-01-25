@@ -109,7 +109,8 @@ export class Effects {
                 scene.remove(ricochetObj.mesh);
                 laserObj.mesh.geometry.dispose();
                 ricochetObj.mesh.geometry.dispose();
-            });
+            })
+            .call(() => diamond.toggleLabels(false), null, "start")
 
         return tl;
     }
@@ -127,11 +128,12 @@ export class Effects {
             .to(diamond.diamondGroup.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 1.0, ease: "power3.inOut" }, "<")
             .to(diamond.energyRing.material, {
                 opacity: 0.3,
-                duration: 1,
+                duration: 0.5,
                 ease: "power1.inOut"
             }, "-=0.5")
 
-            .call(() => diamond.resetRotationBehavior(), null, "<");
+            .call(() => diamond.resetRotationBehavior(), null, "<")
+            .call(() => diamond.toggleLabels(true), null, "start");
 
         return tl;
     }

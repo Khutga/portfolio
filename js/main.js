@@ -5,6 +5,7 @@ import { Background } from './Background.js';
 import { Diamond } from './Diamond.js';
 import { UI } from './UI.js';
 import { Effects } from './Effects.js';
+import { Skills } from './Skills.js';
 
 class DiamondPortfolio {
     constructor() {
@@ -147,10 +148,10 @@ class DiamondPortfolio {
 
     getContentByName(name) {
         const contentMap = {
-            'Face_Projects': { header: "PROJELER", body: "Flutter ve Web tabanlı geliştirdiğim mobil uygulamalar, stok takip sistemleri ve refactoring projelerim." },
-            'Face_Experience': { header: "DENEYİM", body: "5 yılı aşkın süredir sektördeyim. Çeşitli ajanslarda ve freelance olarak kurumsal müşterilere hizmet verdim." },
-            'Face_About': { header: "HAKKIMDA", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
-            'Face_Contact': { header: "İLETİŞİM", body: "Benimle çalışmak veya tanışmak isterseniz LinkedIn üzerinden veya mail yoluyla ulaşabilirsiniz." }
+            'Face_Projects': { header: "PROJECTS", body: "Flutter ve Web tabanlı geliştirdiğim mobil uygulamalar, stok takip sistemleri ve refactoring projelerim." },
+            'Face_Experience': Skills,
+            'Face_About': { header: "ABOUT", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
+            'Face_Contact': { header: "CONTACT", body: "Benimle çalışmak veya tanışmak isterseniz LinkedIn üzerinden veya mail yoluyla ulaşabilirsiniz." }
         };
         for (const key in contentMap) {
             if (name.includes(key)) return contentMap[key];

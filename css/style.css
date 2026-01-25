@@ -1,25 +1,25 @@
 body {
     margin: 0;
     overflow: hidden;
-    background-color: #000005; /* Çok koyu lacivert/siyah */
+    background-color: #000005; 
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* YENİ SAĞ PANEL TASARIMI */
 #side-panel {
     position: fixed;
     top: 0;
-    right: -85%; /* %80 genişlik için biraz daha dışarıdan başlasın */
-    width: 80vw; /* İSTEĞİNİZ: Ekranın %80'ini kaplasın */
+    right: -85%; 
+    width: 80vw; 
     height: 100vh;
-    background: rgba(5, 5, 10, 0.95); /* Çok daha koyu ve net zemin */
+    background: rgba(5, 5, 10, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border-left: 2px solid rgba(0, 255, 255, 0.6);
     box-shadow: -50px 0 100px rgba(0, 0, 0, 0.9);
     color: #fff;
     z-index: 1000;
-    display: flex;
+    overflow-y: auto; 
+    display: block;
     flex-direction: column;
     justify-content: center;
 }
@@ -51,13 +51,6 @@ body {
     letter-spacing: 2px;
 }
 
-.separator {
-    width: 60px;
-    height: 3px;
-    background: #00ffff;
-    margin: 20px 0 30px 0;
-    box-shadow: 0 0 10px #00ffff;
-}
 
 #side-desc {
     font-size: 1.1rem;
@@ -100,20 +93,18 @@ body {
     justify-content: center;
 }
 
-/* İçindeki ikon (3 çizgi / hamburger) */
 .diamond-menu-btn::after {
     content: '';
     position: absolute;
     width: 24px;
     height: 24px;
-    /* Basit bir menü ikonu oluşturuyoruz */
     background: repeating-linear-gradient(
         transparent,
         transparent 4px,
         #fff 4px,
         #fff 6px
     );
-    transform: rotate(-45deg); /* İkon düz dursun diye geri çevir */
+    transform: rotate(-45deg); 
     transition: all 0.3s;
 }
 
@@ -183,4 +174,374 @@ body {
 
 .nav-btn:hover::before {
     width: 30px; /* Hoverda beliren çizgi */
+}
+.skills-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #ffffff;
+    background: rgba(12, 16, 28, 0.85);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 2.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    border: 1px solid rgba(64, 156, 255, 0.15);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Profile Section */
+.profile-section {
+    text-align: center;
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.main-title {
+    font-size: 3.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff 0%, #7ee8fa 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+    letter-spacing: -0.5px;
+    position: relative;
+    padding-bottom: 1rem;
+}
+
+.main-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #409cff, transparent);
+}
+
+.role-badge {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.8rem 1.8rem;
+    background: rgba(64, 156, 255, 0.1);
+    border-radius: 50px;
+    border: 1px solid rgba(64, 156, 255, 0.3);
+}
+
+.diamond-icon {
+    color: #409cff;
+    font-size: 0.8rem;
+    animation: diamond-sparkle 3s infinite;
+}
+
+.role-text {
+    font-size: 1.1rem;
+    color: #a8c7ff;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Summary Section */
+.summary-section {
+    margin: 2.5rem 0 3rem;
+}
+
+.summary-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+    position: relative;
+}
+
+.summary-text {
+    font-size: 1.15rem;
+    line-height: 1.7;
+    color: #d1e0ff;
+    padding: 1.8rem;
+    background: rgba(25, 30, 45, 0.6);
+    border-radius: 16px;
+    border: 1px solid rgba(100, 150, 255, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.summary-decoration {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0.6;
+}
+
+.summary-decoration .line {
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #409cff, transparent);
+}
+
+.summary-decoration .dot {
+    width: 6px;
+    height: 6px;
+    background: #409cff;
+    border-radius: 50%;
+}
+
+/* Expertise Section */
+.expertise-section {
+    margin: 3rem 0;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 2.5rem;
+    position: relative;
+    display: inline-block;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(64, 156, 255, 0.5), transparent);
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.skill-card {
+    background: rgba(25, 30, 45, 0.7);
+    border-radius: 16px;
+    padding: 1.8rem;
+    display: flex;
+    gap: 1.5rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(64, 156, 255, 0.1), transparent);
+    transition: left 0.6s;
+}
+
+.skill-card:hover::before {
+    left: 100%;
+}
+
+.skill-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(64, 156, 255, 0.3);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.skill-icon {
+    font-size: 2.2rem;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba(64, 156, 255, 0.15), rgba(100, 200, 255, 0.1));
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.skill-content {
+    flex: 1;
+}
+
+.skill-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 1rem 0;
+}
+
+.skill-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.skill-list li {
+    color: #b8d0ff;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    padding-left: 1.2rem;
+    position: relative;
+}
+
+.skill-list li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #409cff;
+    font-size: 0.8rem;
+}
+
+/* Details Section */
+.details-section {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+}
+
+.detail-box {
+    background: rgba(20, 25, 40, 0.7);
+    border-radius: 16px;
+    padding: 1.8rem;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.detail-icon {
+    font-size: 1.5rem;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(64, 156, 255, 0.1);
+    border-radius: 12px;
+}
+
+.detail-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+}
+
+.tech-tag {
+    background: rgba(64, 156, 255, 0.1);
+    color: #a8c7ff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border: 1px solid rgba(64, 156, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.tech-tag:hover {
+    background: rgba(64, 156, 255, 0.2);
+    transform: translateY(-2px);
+    border-color: rgba(64, 156, 255, 0.4);
+}
+
+/* Signature */
+.signature {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    opacity: 0.7;
+}
+
+.signature-line {
+    width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #409cff, transparent);
+}
+
+.signature-text {
+    color: #a8c7ff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Animations */
+@keyframes diamond-sparkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .skills-container {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+    
+    .main-title {
+        font-size: 2.4rem;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .skill-card {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .skill-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+    }
+    
+    .role-badge {
+        padding: 0.6rem 1.2rem;
+    }
+    
+    .role-text {
+        font-size: 1rem;
+    }
 }

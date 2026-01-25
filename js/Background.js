@@ -253,9 +253,29 @@ export class Background {
 
     update(deltaTime) {
         this.starTime += deltaTime;
-        if (this.backgroundSphere) this.backgroundSphere.rotation.y += 0.00015;
+        
+        if (this.backgroundSphere) {
+            this.backgroundSphere.rotation.y += 0.00015;
+            this.backgroundSphere.rotation.z += 0.00005;
+        }
+
+        if (this.stars) {
+            this.stars.rotation.y += 0.0003;
+            this.stars.rotation.x += 0.0001;
+            this.stars.position.x = Math.sin(this.starTime * 0.2) * 2.0;
+            this.stars.position.y = Math.cos(this.starTime * 0.15) * 1.5;
+        }
+
+        if (this.dustClouds) {
+            this.dustClouds.rotation.y += 0.0002;
+            this.dustClouds.rotation.z -= 0.0001;
+            this.dustClouds.position.x = Math.cos(this.starTime * 0.1) * 3.0;
+        }
+
         if (this.twinkleStars) {
             this.twinkleStars.material.uniforms.time.value = this.starTime;
+            this.twinkleStars.rotation.y += 0.0005;
+            this.twinkleStars.rotation.z -= 0.0002;
         }
     }
 }
