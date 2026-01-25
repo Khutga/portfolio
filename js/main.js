@@ -6,6 +6,7 @@ import { Diamond } from './Diamond.js';
 import { UI } from './UI.js';
 import { Effects } from './Effects.js';
 import { Skills } from './Skills.js';
+import { Contact } from './Contact.js';
 
 class DiamondPortfolio {
     constructor() {
@@ -151,7 +152,7 @@ class DiamondPortfolio {
             'Face_Projects': { header: "PROJECTS", body: "Flutter ve Web tabanlı geliştirdiğim mobil uygulamalar, stok takip sistemleri ve refactoring projelerim." },
             'Face_Experience': Skills,
             'Face_About': { header: "ABOUT", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
-            'Face_Contact': { header: "CONTACT", body: "Benimle çalışmak veya tanışmak isterseniz LinkedIn üzerinden veya mail yoluyla ulaşabilirsiniz." }
+            'Face_Contact': Contact
         };
         for (const key in contentMap) {
             if (name.includes(key)) return contentMap[key];

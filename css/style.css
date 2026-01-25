@@ -621,3 +621,26 @@ body {
     background: #00ffff;
     box-shadow: 0 0 15px #00ffff;
 }
+.contact-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.contact-subtext {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.8rem;
+    font-family: 'Courier New', monospace;
+    opacity: 0.5;
+    line-height: 1.4;
+}
+
+.matrix-item:hover .contact-subtext {
+    opacity: 0.8;
+    color: #00ffff;
+}
+
+.hero-name.contact-fix {
+    font-size: 4em;
+}
