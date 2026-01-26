@@ -7,6 +7,7 @@ import { UI } from './UI.js';
 import { Effects } from './Effects.js';
 import { Skills } from './Skills.js';
 import { Contact } from './Contact.js';
+import { Projects } from './Projects.js';
 
 class DiamondPortfolio {
     constructor() {
@@ -43,7 +44,7 @@ class DiamondPortfolio {
 
     triggerSection(faceName) {
         this.diamond.alignFaceToCamera(faceName, (targetMesh) => {
-            if (!targetMesh) return; 
+            if (!targetMesh) return;
             const hitPoint = new THREE.Vector3();
             targetMesh.getWorldPosition(hitPoint);
 
@@ -85,14 +86,14 @@ class DiamondPortfolio {
         const y = (event.clientY / window.innerHeight) - 0.5;
 
         gsap.to(this.diamond.diamondGroup.rotation, {
-            x: 0.3 + (y * 0.4), 
-            z: (x * 0.4),       
+            x: 0.3 + (y * 0.4),
+            z: (x * 0.4),
             duration: 0.8,
             ease: "power2.out"
         });
-        
-        
-        
+
+
+
     }
 
     onClick(event) {
@@ -132,7 +133,7 @@ class DiamondPortfolio {
             content.body,
             this.background.sunMesh.position,
             this.sceneManager.scene,
-            this.sceneManager.camera,   
+            this.sceneManager.camera,
             this.sceneManager.controls
         );
     }
@@ -143,13 +144,13 @@ class DiamondPortfolio {
         Effects.leaveSplitView(
             this.diamond,
             this.ui,
-            this.sceneManager.controls 
+            this.sceneManager.controls
         );
     }
 
     getContentByName(name) {
         const contentMap = {
-            'Face_Projects': { header: "PROJECTS", body: "Flutter ve Web tabanlı geliştirdiğim mobil uygulamalar, stok takip sistemleri ve refactoring projelerim." },
+            'Face_Projects': Projects,
             'Face_Experience': Skills,
             'Face_About': { header: "ABOUT", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
             'Face_Contact': Contact
