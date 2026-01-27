@@ -15,12 +15,12 @@ export const Projects = {
                 <div class="matrix-grid">
                     
                     <div class="matrix-item project-card">
-                        <div class="matrix-head">01 / CFD SİGORTA - FULL STACK</div>
+                        <div class="matrix-head">01 / CFD INSURANCE - FULL STACK</div>
                         <div class="project-image-wrapper">
-                            <img src="assets/cfd.png" alt="CFD Sigorta" class="project-img">
+                            <img src="assets/cfd.png" alt="CFD Insurance" class="project-img">
                         </div>
                         <div class="matrix-body">
-                            Müşteri ve admin arayüzlerine sahip kapsamlı sigorta platformu. Poliçe yönetimi, hasar bildirimi ve takibi süreçlerini içeren Full-Stack mimari.
+                            Comprehensive insurance platform featuring customer and admin interfaces. Full-Stack architecture covering policy management, claim reporting, and process tracking.
                         </div>
                         <div class="tag-cloud">
                             <span class="pill">Secure Auth</span>
@@ -37,7 +37,7 @@ export const Projects = {
                             <img src="assets/taksi.png" alt="Taxymaxy" class="project-img">
                         </div>
                         <div class="matrix-body">
-                            Sürücü, müşteri ve admin paneli içeren üçlü ekosistem. Harita servisleri entegrasyonu ile gerçek zamanlı konum takibi ve rota planlama.
+                            A triple ecosystem consisting of driver, customer, and admin panels. Real-time location tracking and route planning via map services integration.
                         </div>
                         <div class="tag-cloud">
                             <span class="pill">Map Services</span>
@@ -54,7 +54,7 @@ export const Projects = {
                             <img src="assets/live.png" alt="Streaming App" class="project-img">
                         </div>
                         <div class="matrix-body">
-                            Gelişmiş kontrol mekanizmalarına sahip yüksek performanslı video akış uygulaması. Kalite ayarları ve kesintisiz izleme için verimli önbellekleme.
+                            High-performance video streaming application with advanced control mechanisms. Efficient caching for quality settings and seamless playback experience.
                         </div>
                         <div class="tag-cloud">
                             <span class="pill">Video Player SDK</span>
