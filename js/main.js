@@ -124,6 +124,9 @@ class DiamondPortfolio {
             this.hoveredObject = null;
         }
 
+        this.ui.openMenu();
+        this.ui.highlightItem(name);
+
         Effects.enterSplitView(
             this.diamond,
             this.background.laserLight,
@@ -140,6 +143,8 @@ class DiamondPortfolio {
     resetView() {
         if (!this.isSplitView) return;
         this.isSplitView = false;
+
+        this.ui.clearHighlights();
 
         Effects.leaveSplitView(
             this.diamond,

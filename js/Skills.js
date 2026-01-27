@@ -1,5 +1,5 @@
 export const Skills = {
-    header: "", // İsim tekrarını önlemek için boş bıraktık
+    header: "", 
     body: `
         <div class="skills-wrapper">
             <section class="skills-hero">
