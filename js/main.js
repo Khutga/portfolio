@@ -13,8 +13,9 @@ import { About } from './About.js';
 class DiamondPortfolio {
     constructor() {
         this.sceneManager = new SceneManager();
-        this.background = new Background(this.sceneManager.scene);
-        this.diamond = new Diamond(this.sceneManager.scene);
+        const loadingManager = this.setupLoadingManager();
+        this.background = new Background(this.sceneManager.scene, loadingManager);
+        this.diamond = new Diamond(this.sceneManager.scene, loadingManager);
         this.ui = new UI();
 
         this.isSplitView = false;
@@ -24,6 +25,10 @@ class DiamondPortfolio {
         this.clock = new THREE.Clock();
 
         this.init();
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            console.log("⚠️");
+        }, false);
     }
 
     init() {
@@ -38,18 +43,75 @@ class DiamondPortfolio {
             'Face_Contact': Contact
         };
 
+        this.ui.onScrollPower = (power) => {
+            const targetSpeed = Math.min(0.15, power * 0.05);
+
+            gsap.to(this.diamond, {
+                rotationSpeed: targetSpeed,
+                duration: 0.2,
+                overwrite: true,
+                onComplete: () => {
+                    gsap.to(this.diamond, {
+                        rotationSpeed: 0.01,
+                        duration: 0.2,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        };
         this.ui.renderOnePageContent(this.contentMap);
+        this.ui.initLightbox();
 
         window.addEventListener('mousemove', (e) => this.onMouseMove(e));
         window.addEventListener('click', (e) => this.onClick(e));
         this.animate();
-        
+
+    }
+
+    setupLoadingManager() {
+        const manager = new THREE.LoadingManager();
+        const loaderBar = document.querySelector('.loader-bar');
+        const loaderPercentage = document.querySelector('.loader-percentage');
+        const preloader = document.getElementById('preloader');
+
+        manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            const progress = (itemsLoaded / itemsTotal) * 100;
+            loaderBar.style.width = progress + '%';
+            loaderPercentage.innerText = Math.round(progress) + '%';
+        };
+
+        manager.onLoad = () => {
+            gsap.to(preloader, {
+                opacity: 0,
+                duration: 1,
+                delay: 0.5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    preloader.style.display = 'none';
+                }
+            });
+        };
+
+        return manager;
     }
 
     handleMenuNavigation(faceName) {
         if (this.isSplitView) {
-            this.resetView();
-            setTimeout(() => this.triggerSection(faceName), 1200);
+            this.ui.scrollToSection(faceName);
+            this.ui.highlightItem(faceName);
+            setTimeout(() => this.ui.initLightbox(), 500);
+
+            gsap.to(this.diamond, {
+                rotationSpeed: 0.15,
+                duration: 0.5,
+                onComplete: () => {
+                    gsap.to(this.diamond, {
+                        rotationSpeed: 0.01,
+                        duration: 1
+                    });
+                }
+            });
+
         } else {
             this.triggerSection(faceName);
         }
@@ -149,7 +211,11 @@ class DiamondPortfolio {
             this.sceneManager.camera,
             this.sceneManager.controls
         );
+        setTimeout(() => {
+            this.ui.initLightbox();
+        }, 1200);
     }
+
     resetView() {
         if (!this.isSplitView) return;
         this.isSplitView = false;

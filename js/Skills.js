@@ -4,7 +4,7 @@ export const Skills = {
         <div class="skills-wrapper">
             <section class="skills-hero">
                 <div class="glitch-box">
-                    <h1 class="hero-name">ALİ SEYİDZADE</h1>
+                    <h1 class="hero-name">ABOUT ME </h1>
                     <div class="hero-line"></div>
                 </div>
                 <div class="hero-badge">

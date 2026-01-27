@@ -18,7 +18,7 @@ export const Contact = {
             <section class="skills-block">
                 <div class="block-label">|| COMMUNICATION CHANNELS</div>
                 <div class="matrix-grid">
-                    <a href="mailto:your-email@example.com" class="contact-link">
+                    <a href="mailto:seyidzade62@gmail.com" class="contact-link">
                         <div class="matrix-item">
                             <div class="matrix-head">01 / DIRECT MAIL</div>
                             <div class="matrix-body">
@@ -47,16 +47,27 @@ export const Contact = {
                             </div>
                         </div>
                     </a>
+
+                      <a href="https://www.instagram.com/sdz.ali/" target="_blank" class="contact-link">
+                        <div class="matrix-item">
+                            <div class="matrix-head">04 / SOCIAL MEDIA</div>
+                            <div class="matrix-body">
+                                Instagram / @sdz.ali<br>
+                                <span class="contact-subtext">Follow me for updates and contact.</span>
+                            </div>
+                        </div>
+                    </a>
                 </div>
             </section>
 
             <section class="skills-footer">
                 <div class="footer-col">
-                    <div class="block-label">|| STATUS</div>
+                    <div class="block-label">|| CURRENT LOCATION</div>
                     <div class="pill-row">
-                        <span class="pill">Fast Response</span>
-                        <span class="pill">Global Work</span>
-                        <span class="pill">Freelance Ready</span>
+                        <span class="pill" style="border-color: #00ffff; color: #fff; background: rgba(0, 255, 255, 0.1); padding: 10px 25px; letter-spacing: 2px;">
+                            📍 TÜRKİYE, BURSA, NİLÜFER
+                        </span>
+                    
                     </div>
                 </div>
             </section>

@@ -209,6 +209,8 @@ export class Background {
         this.scene.add(this.twinkleStars);
     }
 
+    
+
     createLights() {
         const ambientLight = new THREE.AmbientLight(0x050510, 0.4);
         this.scene.add(ambientLight);

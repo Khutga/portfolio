@@ -3,12 +3,14 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import gsap from 'https://cdn.skypack.dev/gsap';
 
 export class Diamond {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.scene = scene;
         this.diamondGroup = new THREE.Group();
         this.loader = new GLTFLoader();
         this.rotationSpeed = 0.002;
         this.energyRing = null;
+        this.loader = new GLTFLoader(loadingManager);
+        this.loadModel();
         this.init();
 
     }

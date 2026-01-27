@@ -59,7 +59,7 @@ export const About = {
         .tech-stack-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-            gap: 12px; /* Boşluk biraz azaltıldı */
+            gap: 12px; 
             margin-top: 30px;
         }
 
@@ -68,7 +68,6 @@ export const About = {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            /* Yükseklik ayarı: Padding üst/alt 15px'den 10px'e düşürüldü */
             padding: 10px 5px; 
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -86,10 +85,8 @@ export const About = {
         }
 
         .tech-icon {
-            /* İkon boyutu biraz küçültüldü (42px -> 38px) */
             width: 38px;
             height: 38px;
-            /* Alt boşluk azaltıldı (12px -> 8px) */
             margin-bottom: 8px;
             object-fit: contain;
             filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); 
@@ -128,7 +125,7 @@ export const About = {
         
         <section class="skills-hero">
             <div class="glitch-box">
-                <h1 class="hero-name">ABOUT ME</h1>
+                <h1 class="hero-name">ALİ SEYİDZADE</h1>
                 <div class="hero-line"></div>
             </div>
         </section>
