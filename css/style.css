@@ -1,3 +1,4 @@
+/* Genel sayfa yapısı: Kenar boşluklarını sıfırlar ve taşmaları gizleyerek 3D sahne için temiz bir alan sağlar */
 body {
     margin: 0;
     overflow: hidden;
@@ -5,6 +6,7 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 
+/* Yan panel (Drawer): İçeriklerin (Skills, Projects vb.) gösterildiği ana konteyner. Başlangıçta ekranın sağında gizlidir */
 #side-panel {
     position: fixed;
     top: 0;
@@ -24,88 +26,132 @@ body {
     transition: right 0.6s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
+/* Yan panel aktif olduğunda ekrana gelmesini sağlayan sınıf */
 #side-panel.active {
     right: 0;
 }
 
-.content-wrapper {
-    padding: 60px 40px;
-    opacity: 0;
-    transform: translateX(30px);
-    transition: all 0.6s ease 0.4s;
-}
 
+/* Panel açıldığında içeriğin görünür hale gelmesi */
 #side-panel.active .content-wrapper {
     opacity: 1;
     transform: translateX(0);
 }
 
+/* Panel başlık stili: Neon gradyan efekti uygulanmıştır */
 #side-title {
     font-size: 2.5rem;
     font-weight: 300;
     margin: 0;
     background: linear-gradient(90deg, #fff, #00ffff);
     background-clip: text;
+    background-clip: text;
     -webkit-background-clip: text;
+    background-clip: text;
+    background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 2px;
 }
 
-
+/* Panel içindeki metinlerin okunabilirlik ayarları */
 #side-desc {
     font-size: 1.1rem;
     line-height: 1.8;
     color: #cccccc;
 }
 
+/* Paneli kapatma butonu: Sağ üstte yer alan 'X' butonu */
 #close-side-btn {
     position: absolute;
     top: 30px;
     right: 30px;
     background: none;
     border: none;
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 2rem;
+    color: #fff;
+    font-size: 2.5rem;
     cursor: pointer;
-    transition: 0.3s;
+    transition: 0.3s ease;
+    z-index: 1001;
 }
 
+/* Kapatma butonuna gelindiğinde dönme efekti */
 #close-side-btn:hover {
     color: #fff;
     transform: rotate(90deg);
 }
 
+/* YUKARI AŞAĞI SÜZÜLME ANİMASYONU */
+@keyframes diamond-float {
+
+    0%,
+    100% {
+        top: 35px;
+    }
+
+    50% {
+        top: 25px;
+    }
+
+}
+
+/* Sol üstteki Vektörel & Wireframe Elmas Buton */
 .diamond-menu-btn {
     position: fixed;
-    top: 40px;
-    left: 40px;
-    width: 55px;
-    height: 55px;
-    background: rgba(0, 0, 0, 0.8);
-    border: 2px solid #00ffff;
-    transform: rotate(45deg);
+    left: 35px;
+    width: 70px;
+    height: 65px;
     z-index: 2001;
     cursor: pointer;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.2);
+    background-color: #00ffff;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 35%, 50% 100%, 0% 35%);
+    animation: diamond-float 3s ease-in-out infinite;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+        filter 0.4s ease,
+        background-color 0.4s ease;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
+    filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5));
 }
 
-.inner-diamond {
-    width: 20px;
-    height: 20px;
-    border: 1px solid #fff;
-    transition: all 0.4s ease;
+/* Elmasın içindeki koyu zemin (Çerçeve etkisi için) */
+.diamond-menu-btn::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    background-color: rgba(5, 10, 20, 0.9);
+    clip-path: polygon(20% 0%, 80% 0%, 100% 35%, 50% 100%, 0% 35%);
+    z-index: 1;
+    transition: all 0.3s ease;
 }
 
 
+/* --- HOVER (ÜZERİNE GELİNCE) --- */
 .diamond-menu-btn:hover {
-    box-shadow: 0 0 30px rgba(0, 255, 255, 0.8);
-    background: rgba(0, 255, 255, 0.1);
+    animation-play-state: paused;
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px #00ffff);
+    background-color: #fff;
 }
 
+.diamond-menu-btn:hover::after {
+    background-color: rgba(0, 255, 255, 0.15);
+}
+
+.diamond-menu-btn:hover::before {
+    opacity: 0.8;
+    background:
+        linear-gradient(to right, transparent 48%, #fff 50%, transparent 52%),
+        linear-gradient(to bottom, transparent 34%, #fff 35%, transparent 36%);
+}
+
+/* Navigasyon menüsünün dikey hizalaması ve gizlilik ayarları */
 .nav-menu {
     position: fixed;
     top: 140px;
@@ -121,12 +167,14 @@ body {
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* Navigasyon menüsü açıldığında görünür olması */
 .nav-menu.open {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
+/* Menü içindeki her bir butonun (PROJECTS, SKILLS vb.) temel stili */
 .nav-btn {
     background: transparent;
     border: none;
@@ -145,6 +193,7 @@ body {
     position: relative;
 }
 
+/* Menü butonları üzerine gelindiğinde oluşan kayma ve neon efekti */
 .nav-btn:hover {
     color: #00ffff;
     border-left: 2px solid #00ffff;
@@ -152,6 +201,7 @@ body {
     background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), transparent);
 }
 
+/* Menü butonu aktifleştiğinde (açıldığında) şekil değiştirmesi */
 .diamond-menu-btn.menu-active {
     transform: rotate(225deg);
     border-color: #fff;
@@ -162,6 +212,7 @@ body {
     background: #fff;
 }
 
+/* O an hangi sayfadaysak menüde o butonun vurgulu kalmasını sağlayan sınıf */
 .nav-btn.active-page {
     color: #00ffff !important;
     padding-left: 25px;
@@ -207,10 +258,8 @@ body {
 
 
 
-#side-panel.active {
-    right: 0;
-}
 
+/* Panel içindeki içeriklerin yerleşimi ve giriş animasyonu */
 .content-wrapper {
     padding: 80px 40px;
     opacity: 0;
@@ -221,11 +270,6 @@ body {
 #side-panel.active .content-wrapper {
     opacity: 1;
     transform: translateX(0);
-}
-
-.skills-container {
-    width: 100%;
-    margin: 0 auto;
 }
 
 .main-title {
@@ -264,6 +308,7 @@ body {
     border-radius: 15px;
 }
 
+/* Izgara yapısı: Yetenek kartları veya proje kartlarını yan yana dizer */
 .matrix-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -271,6 +316,7 @@ body {
     margin-bottom: 50px;
 }
 
+/* Siberpunk tarzı her bir bilgi kartı (Matrix Item) */
 .matrix-item {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(0, 255, 255, 0.1);
@@ -278,80 +324,6 @@ body {
     padding: 25px;
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
-
-.skill-card:hover {
-    transform: translateY(-5px);
-    border-color: #00ffff;
-    background: rgba(0, 255, 255, 0.05);
-}
-
-.skill-title {
-    color: #fff;
-    font-size: 1.3rem;
-    margin: 15px 0;
-}
-
-.skill-list {
-    list-style: none;
-    padding: 0;
-}
-
-.skill-list li {
-    color: #aaa;
-    margin-bottom: 8px;
-    padding-left: 15px;
-    position: relative;
-}
-
-.skill-list li::before {
-    content: '◆';
-    position: absolute;
-    left: 0;
-    color: #00ffff;
-    font-size: 0.7rem;
-    top: 5px;
-}
-
-.details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-}
-
-.detail-box {
-    background: rgba(0, 0, 0, 0.3);
-    padding: 20px;
-    border-radius: 12px;
-}
-
-.tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-.tech-tag {
-    background: rgba(0, 255, 255, 0.1);
-    color: #00ffff;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    border: 1px solid rgba(0, 255, 255, 0.2);
-}
-
-#close-side-btn {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 2.5rem;
-    cursor: pointer;
-    z-index: 1001;
-}
-
-
 
 @media (max-width: 768px) {
     #side-panel {
@@ -368,6 +340,7 @@ body {
     }
 }
 
+/* Başlık alanı: İsim ve Glitch efekti için kapsayıcı */
 .hero-name {
 
     font-size: 5em;
@@ -414,6 +387,7 @@ body {
     box-shadow: 0 0 10px #00ffff;
 }
 
+/* Rol başlığı (DEVELOPER vb.) altındaki parlayan nokta animasyonu */
 .pulse-dot {
     width: 6px;
     height: 6px;
@@ -590,6 +564,7 @@ body {
     box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
 }
 
+/* Küçük teknoloji etiketleri (Tag) */
 .pill {
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -620,6 +595,7 @@ body {
     }
 }
 
+/* Yan panel içindeki özel kaydırma çubuğu (scrollbar) tasarımı */
 #side-panel::-webkit-scrollbar-thumb {
     background: #00ffff;
     box-shadow: 0 0 15px #00ffff;
@@ -687,6 +663,7 @@ body {
     margin-top: 20px;
 }
 
+/* Küçük teknoloji etiketleri (Tag) */
 .tag-cloud .pill {
     font-size: 0.65rem;
     padding: 4px 10px;
@@ -697,6 +674,7 @@ body {
     letter-spacing: 1px;
 }
 
+/* Proje resimlerinin kart içindeki yerleşimi */
 .project-image-wrapper {
     width: 100%;
     height: 200px;
