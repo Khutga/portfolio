@@ -8,6 +8,7 @@ import { Effects } from './Effects.js';
 import { Skills } from './Skills.js';
 import { Contact } from './Contact.js';
 import { Projects } from './Projects.js';
+import { About } from './About.js';
 
 class DiamondPortfolio {
     constructor() {
@@ -30,7 +31,19 @@ class DiamondPortfolio {
         this.ui.setMenuCallback((faceId) => this.handleMenuNavigation(faceId));
         window.addEventListener('mousemove', (e) => this.onMouseMove(e));
         window.addEventListener('click', (e) => this.onClick(e));
+        this.contentMap = {
+            'Face_Projects': Projects,
+            'Face_Experience': Skills,
+            'Face_About': About,
+            'Face_Contact': Contact
+        };
+
+        this.ui.renderOnePageContent(this.contentMap);
+
+        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
+        window.addEventListener('click', (e) => this.onClick(e));
         this.animate();
+        
     }
 
     handleMenuNavigation(faceName) {
@@ -114,8 +127,6 @@ class DiamondPortfolio {
 
     handleDiamondClick(object, hitPoint) {
         const name = object.name;
-        let content = this.getContentByName(name);
-        if (!content) return;
 
         this.isSplitView = true;
 
@@ -132,8 +143,7 @@ class DiamondPortfolio {
             this.background.laserLight,
             hitPoint,
             this.ui,
-            content.header,
-            content.body,
+            name,
             this.background.sunMesh.position,
             this.sceneManager.scene,
             this.sceneManager.camera,

@@ -34,9 +34,9 @@ export class UI {
         menuContainer.className = 'nav-menu';
 
         const items = [
-            { label: 'PROJECTS', id: 'Face_Projects' },
-            { label: 'SKILLS', id: 'Face_Experience' },
             { label: 'ABOUT', id: 'Face_About' },
+            { label: 'SKILLS', id: 'Face_Experience' },
+            { label: 'PROJECTS', id: 'Face_Projects' },            
             { label: 'CONTACT', id: 'Face_Contact' }
         ];
 
@@ -86,17 +86,49 @@ export class UI {
     clearHighlights() {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-page'));
     }
+    
 
+    renderOnePageContent(contentMap) {
+        const wrapper = document.querySelector('.content-wrapper');
+        wrapper.innerHTML = ''; 
+
+        const order = ['Face_About','Face_Experience','Face_Projects','Face_Contact'];
+
+        order.forEach(key => {
+            const sectionData = contentMap[key];
+            if (!sectionData) return;
+
+            const section = document.createElement('section');
+            section.id = key; 
+            section.classList.add('onepage-section');
+            
+            section.style.marginBottom = "150px"; 
+            section.style.paddingTop = "20px"; 
+
+            section.innerHTML = sectionData.body;
+            wrapper.appendChild(section);
+        });
+    }
+
+    scrollToSection(id) {
+        const section = document.getElementById(id);
+        if (section && this.sidePanel) {
+            this.sidePanel.classList.add('active');
+            
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
 
     setCloseCallback(callback) {
         this.onClose = callback;
     }
 
-    showPanel(header, htmlContent) {
-        if (this.titleEl) this.titleEl.innerText = header;
-        if (this.descEl) this.descEl.innerHTML = htmlContent;
+
+    openPanel() {
         if (this.sidePanel) this.sidePanel.classList.add('active');
     }
+
+
 
     hidePanel() {
         if (this.sidePanel) this.sidePanel.classList.remove('active');

@@ -42,7 +42,7 @@ export class Effects {
         return { mesh: laserMesh, core: coreMesh, mat: material, coreMat: coreMat };
     }
 
-    static enterSplitView(diamond, laserLight, hitPoint, ui, header, body, sunPosition, scene, camera, controls) {
+   static enterSplitView(diamond, laserLight, hitPoint, ui, targetId, sunPosition, scene, camera, controls) {
 
         if (controls) {
             controls.enabled = false;
@@ -100,7 +100,11 @@ export class Effects {
             .to([laserObj.mat, laserObj.coreMat], { opacity: 1, duration: 0.1 }, "start+=0.2")
             .to(laserLight, { intensity: 1500, duration: 0.1 }, "start+=0.2")
             .to([ricochetObj.mat, ricochetObj.coreMat], { opacity: 1, duration: 0.1 }, "start+=0.3")
-            .call(() => ui.showPanel(header, body), null, "start+=0.4")
+            .call(() => {
+                ui.openPanel();
+                ui.scrollToSection(targetId);
+            }, null, "start+=0.4")
+            
             .to([laserObj.mat, laserObj.coreMat], { opacity: 0, duration: 0.4 }, "start+=0.8")
             .to([ricochetObj.mat, ricochetObj.coreMat], { opacity: 0, duration: 0.4 }, "start+=0.8")
             .to(laserLight, { intensity: 0, duration: 0.5 }, "start+=0.8")
@@ -115,7 +119,7 @@ export class Effects {
         return tl;
     }
 
-    static leaveSplitView(diamond, ui, controls, camera) {
+    static leaveSplitView(diamond, ui, controls, _camera) {
         const tl = gsap.timeline();
 
         tl.call(() => ui.hidePanel())

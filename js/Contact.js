@@ -7,14 +7,9 @@ export const Contact = {
                     <h1 class="hero-name" style="font-size: 4em;">CONTACT</h1>
                     <div class="hero-line"></div>
                 </div>
-                <div class="hero-badge">
-                    <span class="pulse-dot"></span>
-                    <span class="role-title">AVAILABLE FOR NEW PROJECTS</span>
-                </div>
             </section>
 
             <section class="skills-block">
-                <div class="block-label">|| BRIEF</div>
                 <p class="summary-para">
                     I leverage <span class="highlight">modern technologies</span> and <span class="highlight">aesthetic design</span> to transform your ideas into digital reality. Feel free to reach out through any of the channels below.
                 </p>
