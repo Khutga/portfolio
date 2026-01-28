@@ -60,6 +60,36 @@ export const Contact = {
                 </div>
             </section>
 
+            <section class="skills-block" style="margin-top: 50px;">
+                <div class="block-label">|| SEND MESSAGE</div>
+                <div class="matrix-item" style="padding: 30px; border: 1px solid rgba(0, 255, 255, 0.3);">
+                    <form id="contactForm" onsubmit="return false;">
+                        
+                        <input type="text" name="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off">
+
+                        <div style="margin-bottom: 20px;">
+                            <label class="matrix-head" style="display:block; margin-bottom:5px;">IDENTITY NAME</label>
+                            <input type="text" id="formName" class="cyber-input" placeholder="ENTER YOUR NAME" required>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label class="matrix-head" style="display:block; margin-bottom:5px;">EMAIL</label>
+                            <input type="email" id="formEmail" class="cyber-input" placeholder="ENTER YOUR EMAIL" required>
+                        </div>
+
+                        <div style="margin-bottom: 20px;">
+                            <label class="matrix-head" style="display:block; margin-bottom:5px;">MESSAGE</label>
+                            <textarea id="formMessage" class="cyber-input" rows="4" placeholder="ENTER MESSAGE CONTENT" required></textarea>
+                        </div>
+
+                        <button type="submit" id="sendBtn" class="cyber-btn">
+                            INITIATE TRANSMISSION
+                        </button>
+                        
+                        <div id="formStatus" style="margin-top: 15px; font-family: monospace; font-size: 0.9rem; min-height: 20px;"></div>
+                    </form>
+                </div>
+            </section>
             <section class="skills-footer">
                 <div class="footer-col">
                     <div class="block-label">|| CURRENT LOCATION</div>
@@ -67,10 +97,47 @@ export const Contact = {
                         <span class="pill" style="border-color: #00ffff; color: #fff; background: rgba(0, 255, 255, 0.1); padding: 10px 25px; letter-spacing: 2px;">
                             📍 TÜRKİYE, BURSA, NİLÜFER
                         </span>
-                    
                     </div>
                 </div>
             </section>
         </div>
+
+        <style>
+            .cyber-input {
+                width: 100%;
+                background: rgba(0, 0, 0, 0.4);
+                border: 1px solid #333;
+                color: #fff;
+                padding: 12px;
+                font-family: 'Segoe UI', sans-serif;
+                outline: none;
+                transition: 0.3s;
+            }
+            .cyber-input:focus {
+                border-color: #00ffff;
+                box-shadow: 0 0 10px rgba(0, 255, 255, 0.1);
+            }
+            .cyber-btn {
+                background: transparent;
+                border: 1px solid #00ffff;
+                color: #00ffff;
+                padding: 15px 30px;
+                font-family: 'Courier New', monospace;
+                font-weight: bold;
+                cursor: pointer;
+                letter-spacing: 1px;
+                transition: 0.3s;
+                width: 100%;
+            }
+            .cyber-btn:hover {
+                background: rgba(0, 255, 255, 0.1);
+                box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+            }
+            .cyber-btn:disabled {
+                border-color: #555;
+                color: #555;
+                cursor: not-allowed;
+            }
+        </style>
     `
 };

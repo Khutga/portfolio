@@ -1,4 +1,4 @@
-import gsap from 'https://cdn.skypack.dev/gsap';
+import gsap from 'gsap';
 export class UI {
     constructor() {
         this.sidePanel = document.getElementById('side-panel');

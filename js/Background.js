@@ -8,7 +8,8 @@ export class Background {
         this.dustClouds = null;
         this.twinkleStars = null;
         this.starTime = 0;
-
+        this.mouseX = 0;
+        this.mouseY = 0;
         this.init();
     }
 
@@ -209,7 +210,7 @@ export class Background {
         this.scene.add(this.twinkleStars);
     }
 
-    
+
 
     createLights() {
         const ambientLight = new THREE.AmbientLight(0x050510, 0.4);
@@ -253,9 +254,14 @@ export class Background {
         this.scene.add(this.laserLight);
     }
 
+    updateMousePosition(x, y) {
+        this.mouseX = x;
+        this.mouseY = y;
+    }
+
     update(deltaTime) {
         this.starTime += deltaTime;
-        
+
         if (this.backgroundSphere) {
             this.backgroundSphere.rotation.y += 0.00015;
             this.backgroundSphere.rotation.z += 0.00005;
@@ -264,20 +270,38 @@ export class Background {
         if (this.stars) {
             this.stars.rotation.y += 0.0003;
             this.stars.rotation.x += 0.0001;
-            this.stars.position.x = Math.sin(this.starTime * 0.2) * 2.0;
-            this.stars.position.y = Math.cos(this.starTime * 0.15) * 1.5;
+
+            const autoX = Math.sin(this.starTime * 0.2) * 2.0;
+            const autoY = Math.cos(this.starTime * 0.15) * 1.5;
+
+            const targetX = autoX + (this.mouseX * 12.0);
+            const targetY = autoY + (-this.mouseY * 12.0);
+
+            this.stars.position.x += (targetX - this.stars.position.x) * 0.05;
+            this.stars.position.y += (targetY - this.stars.position.y) * 0.05;
         }
 
         if (this.dustClouds) {
             this.dustClouds.rotation.y += 0.0002;
             this.dustClouds.rotation.z -= 0.0001;
-            this.dustClouds.position.x = Math.cos(this.starTime * 0.1) * 3.0;
+
+            const autoX = Math.cos(this.starTime * 0.1) * 3.0;
+            const targetX = autoX + (this.mouseX * 4.0);
+            const targetY = (-this.mouseY * 4.0);
+
+            this.dustClouds.position.x += (targetX - this.dustClouds.position.x) * 0.05;
         }
 
         if (this.twinkleStars) {
             this.twinkleStars.material.uniforms.time.value = this.starTime;
             this.twinkleStars.rotation.y += 0.0005;
             this.twinkleStars.rotation.z -= 0.0002;
+
+            const targetX = (this.mouseX * 8.0);
+            const targetY = (-this.mouseY * 8.0);
+
+            this.twinkleStars.position.x += (targetX - this.twinkleStars.position.x) * 0.05;
+            this.twinkleStars.position.y += (targetY - this.twinkleStars.position.y) * 0.05;
         }
     }
 }

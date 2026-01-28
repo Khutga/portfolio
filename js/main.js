@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import gsap from 'https://cdn.skypack.dev/gsap';
+import gsap from 'gsap';
 import { SceneManager } from './SceneManager.js';
 import { Background } from './Background.js';
 import { Diamond } from './Diamond.js';
@@ -25,10 +25,47 @@ class DiamondPortfolio {
         this.clock = new THREE.Clock();
 
         this.init();
+
+        /*Iron Dome*/
         window.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-            console.log("⚠️");
         }, false);
+
+        window.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        setInterval(() => {
+            const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
+            console.log('%c Diamond ', stil);
+        }, 2000);
+
+        setInterval(() => {
+            const start = Date.now();
+            debugger;
+            const end = Date.now();
+            if (end - start > 100) {
+                document.body.innerHTML = "<h1>İzinsiz giriş tespit edildi.</h1>";
+            }
+        }, 100);
+
+        /*Iron Dome*/
     }
 
     init() {
@@ -141,7 +178,6 @@ class DiamondPortfolio {
         this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
         this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
-
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
 
@@ -160,15 +196,14 @@ class DiamondPortfolio {
         const x = (event.clientX / window.innerWidth) - 0.5;
         const y = (event.clientY / window.innerHeight) - 0.5;
 
+        this.background.updateMousePosition(x, y);
+
         gsap.to(this.diamond.diamondGroup.rotation, {
             x: 0.3 + (y * 0.4),
             z: (x * 0.4),
             duration: 0.8,
             ease: "power2.out"
         });
-
-
-
     }
 
     onClick(event) {
@@ -214,6 +249,10 @@ class DiamondPortfolio {
         setTimeout(() => {
             this.ui.initLightbox();
         }, 1200);
+
+        if (faceName === 'Face_Contact') {
+            this.initContactFormLogic();
+        }
     }
 
     resetView() {
@@ -249,6 +288,64 @@ class DiamondPortfolio {
         this.sceneManager.render();
         requestAnimationFrame(() => this.animate());
 
+    }
+
+    initContactFormLogic() {
+        setTimeout(() => {
+            const form = document.getElementById('contactForm');
+            if (!form) return;
+
+            const newForm = form.cloneNode(true);
+            form.parentNode.replaceChild(newForm, form);
+
+            newForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const btn = document.getElementById('sendBtn');
+                const status = document.getElementById('formStatus');
+                const gotcha = document.getElementsByName('_gotcha')[0].value;
+
+                if (gotcha !== "") {
+                    console.log("Bot detected.");
+                    return;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = "TRANSMITTING DATA...";
+                status.innerHTML = "";
+
+                const formData = {
+                    name: document.getElementById('formName').value,
+                    email: document.getElementById('formEmail').value,
+                    message: document.getElementById('formMessage').value,
+                    _gotcha: gotcha
+                };
+
+                try {
+                    // KENDİ PHP DOSYANA İSTEK AT
+                    const response = await fetch('./contact.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok && result.success) {
+                        status.innerHTML = `<span style="color:#00ff00">> SUCCESS: ${result.message}</span>`;
+                        newForm.reset();
+                    } else {
+                        status.innerHTML = `<span style="color:#ff0000">> ERROR: ${result.message}</span>`;
+                    }
+
+                } catch (error) {
+                    status.innerHTML = `<span style="color:#ff0000">> FATAL ERROR: CONNECTION LOST.</span>`;
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = "INITIATE TRANSMISSION";
+                }
+            });
+        }, 500);
     }
 }
 

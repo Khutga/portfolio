@@ -84,6 +84,10 @@ export const About = {
             box-shadow: 0 5px 20px rgba(0, 255, 255, 0.1);
         }
 
+        .tech-item img {
+             pointer-events: none;
+        }
+
         .tech-icon {
             width: 38px;
             height: 38px;
@@ -132,7 +136,7 @@ export const About = {
 
         <div class="about-profile-card">
             <div class="profile-img-wrapper">
-                <img src="./assets/profile.jpg" alt="Ali Seyidzade" class="profile-img" onerror="this.src='./assets/cfd.png'">
+                <img src="./assets/profile.jpg" alt="Ali Seyidzade" class="profile-img" draggable="false" ondragstart="return false;" onerror="this.src='./assets/cfd.png'">
             </div>
             
             <div class="about-content">
@@ -154,67 +158,67 @@ export const About = {
             <div class="tech-stack-grid">
                 
                 <div class="tech-item">
-                    <img src="./assets/logos/flutter.svg" alt="Flutter" class="tech-icon">
+                    <img src="./assets/logos/flutter.svg" alt="Flutter" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Flutter</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/dart.png" alt="Dart" class="tech-icon">
+                    <img src="./assets/logos/dart.png" alt="Dart" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Dart</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/react.png" alt="React" class="tech-icon">
+                    <img src="./assets/logos/react.png" alt="React" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">React</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/threejs.png" alt="Three.js" class="tech-icon">
+                    <img src="./assets/logos/threejs.png" alt="Three.js" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Three.js</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/node.svg" alt="Node.js" class="tech-icon">
+                    <img src="./assets/logos/node.svg" alt="Node.js" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Node.js</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/sql.png" alt="SQL" class="tech-icon">
+                    <img src="./assets/logos/sql.png" alt="SQL" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">SQL</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/firebase.svg" alt="Firebase" class="tech-icon">
+                    <img src="./assets/logos/firebase.svg" alt="Firebase" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Firebase</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/ios.svg" alt="iOS" class="tech-icon">
+                    <img src="./assets/logos/ios.svg" alt="iOS" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">iOS</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/cross.png" alt="Cross-Platform" class="tech-icon">
+                    <img src="./assets/logos/cross.png" alt="Cross-Platform" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Cross-Platform</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/figma.svg" alt="Figma" class="tech-icon">
+                    <img src="./assets/logos/figma.svg" alt="Figma" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Figma</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/realtime.png" alt="Real-Time" class="tech-icon">
+                    <img src="./assets/logos/realtime.png" alt="Real-Time" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Real-Time</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/android.png" alt="Android" class="tech-icon">
+                    <img src="./assets/logos/android.png" alt="Android" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Android</span>
                 </div>
 
                 <div class="tech-item">
-                    <img src="./assets/logos/adobe.png" alt="Adobe" class="tech-icon">
+                    <img src="./assets/logos/adobe.png" alt="Adobe" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">Adobe</span>
                 </div>
 

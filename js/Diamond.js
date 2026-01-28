@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import gsap from 'https://cdn.skypack.dev/gsap';
+import gsap from 'gsap';
 
 export class Diamond {
     constructor(scene, loadingManager) {

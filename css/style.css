@@ -1,3 +1,14 @@
+/* Tüm resimler için koruma kalkanı */
+img {
+    -webkit-user-drag: none;  
+    user-drag: none;          
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    pointer-events: auto;   
+}
+
 /* Genel sayfa yapısı: Kenar boşluklarını sıfırlar ve taşmaları gizleyerek 3D sahne için temiz bir alan sağlar */
 body {
     margin: 0;

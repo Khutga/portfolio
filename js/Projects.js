@@ -17,7 +17,7 @@ export const Projects = {
                     <div class="matrix-item project-card">
                         <div class="matrix-head">01 / CFD INSURANCE - FULL STACK</div>
                         <div class="project-image-wrapper">
-                            <img src="assets/cfd.png" alt="CFD Insurance" class="project-img">
+                            <img src="assets/cfd.png" alt="CFD Insurance" class="project-img" draggable="false" ondragstart="return false;">
                         </div>
                         <div class="matrix-body">
                             Comprehensive insurance platform featuring customer and admin interfaces. Full-Stack architecture covering policy management, claim reporting, and process tracking.
@@ -34,7 +34,7 @@ export const Projects = {
                     <div class="matrix-item project-card">
                         <div class="matrix-head">02 / TAXYMAXY - RIDE HAILING</div>
                         <div class="project-image-wrapper">
-                            <img src="assets/taksi.png" alt="Taxymaxy" class="project-img">
+                            <img src="assets/taksi.png" alt="Taxymaxy" class="project-img" draggable="false" ondragstart="return false;">
                         </div>
                         <div class="matrix-body">
                             A triple ecosystem consisting of driver, customer, and admin panels. Real-time location tracking and route planning via map services integration.
@@ -51,7 +51,7 @@ export const Projects = {
                     <div class="matrix-item project-card">
                         <div class="matrix-head">03 / STREAMING APP - MEDIA</div>
                         <div class="project-image-wrapper">
-                            <img src="assets/live.png" alt="Streaming App" class="project-img">
+                            <img src="assets/live.png" alt="Streaming App" class="project-img" draggable="false" ondragstart="return false;">
                         </div>
                         <div class="matrix-body">
                             High-performance video streaming application with advanced control mechanisms. Efficient caching for quality settings and seamless playback experience.
