@@ -142,24 +142,25 @@ export class Effects {
         return tl;
     }
 
-    static hoverEffect(object, isHovering) {
-        if (!object || !object.material) return;
 
-        if (object.material.emissive === undefined) return;
+static hoverEffect(object, isHovering) {
+    if (!object || !object.material) return;
 
-        if (isHovering) {
-            gsap.to(object.material, {
-                emissiveIntensity: 0.8,
-                duration: 0.3,
-                overwrite: true
-            });
-            object.material.emissive = new THREE.Color(0x00ffff);
-        } else {
-            gsap.to(object.material, {
-                emissiveIntensity: 0,
-                duration: 0.5,
-                overwrite: true
-            });
-        }
+    if (object.material.emissive === undefined) return;
+
+    if (isHovering) {
+        gsap.to(object.material, {
+            emissiveIntensity: 1.5,
+            duration: 0.3,
+            overwrite: true
+        });
+        object.material.emissive = new THREE.Color(0x00ffff); 
+    } else {
+        gsap.to(object.material, {
+            emissiveIntensity: 0,
+            duration: 0.5,
+            overwrite: true
+        });
     }
+}
 }
