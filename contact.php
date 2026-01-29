@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // Prodüksiyonda '*' yerine 'https://seninsiten.com' yaz.
+header("Access-Control-Allow-Origin: https://seyidzade.sbs"); 
 header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
@@ -44,7 +44,7 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
 // Mail Gönderimi (PHP mail() fonksiyonu)
 $to = "seyidzade62@gmail.com"; 
 $subject = "PORTFOLIO: New Encrypted Transmission from $name";
-$headers = "From: noreply@seninsiten.com\r\n";
+$headers = "From: ali@seyidzade.sbs\r\n";
 $headers .= "Reply-To: $email\r\n";
 $headers .= "MIME-Version: 1.0\r\n";
 $headers .= "Content-Type: text/html; charset=UTF-8\r\n";

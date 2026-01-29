@@ -322,7 +322,6 @@ class DiamondPortfolio {
                 };
 
                 try {
-                    // KENDİ PHP DOSYANA İSTEK AT
                     const response = await fetch('./contact.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
