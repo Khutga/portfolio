@@ -65,6 +65,8 @@ export const Contact = {
                 <div class="matrix-item" style="padding: 30px; border: 1px solid rgba(0, 255, 255, 0.3);">
                     <form id="contactForm" onsubmit="return false;">
                         
+                        <input type="hidden" id="recaptchaToken" name="recaptcha_token">
+                        
                         <input type="text" name="_gotcha" style="display:none !important;" tabindex="-1" autocomplete="off">
 
                         <div style="margin-bottom: 20px;">

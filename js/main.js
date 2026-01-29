@@ -27,7 +27,7 @@ class DiamondPortfolio {
         this.init();
 
         /*Iron Dome*/
-        window.addEventListener('contextmenu', (e) => {
+       /* window.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         }, false);
 
@@ -64,6 +64,7 @@ class DiamondPortfolio {
                 document.body.innerHTML = "<h1>İzinsiz giriş tespit edildi.</h1>";
             }
         }, 100);
+        */
 
         /*Iron Dome*/
     }
@@ -250,7 +251,7 @@ class DiamondPortfolio {
             this.ui.initLightbox();
         }, 1200);
 
-        if (faceName === 'Face_Contact') {
+        if (name === 'Face_Contact') {
             this.initContactFormLogic();
         }
     }
@@ -290,62 +291,99 @@ class DiamondPortfolio {
 
     }
 
-    initContactFormLogic() {
-        setTimeout(() => {
-            const form = document.getElementById('contactForm');
-            if (!form) return;
+    // js/main.js içindeki initContactFormLogic fonksiyonu
 
-            const newForm = form.cloneNode(true);
-            form.parentNode.replaceChild(newForm, form);
+initContactFormLogic() {
+    setTimeout(() => {
+        const oldForm = document.getElementById('contactForm');
+        if (!oldForm) return;
 
-            newForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
+        // 1. Formu kopyalayıp eskisinin yerine koyuyoruz (Event Listener temizliği için)
+        const newForm = oldForm.cloneNode(true);
+        oldForm.parentNode.replaceChild(newForm, oldForm);
 
-                const btn = document.getElementById('sendBtn');
-                const status = document.getElementById('formStatus');
-                const gotcha = document.getElementsByName('_gotcha')[0].value;
+        // 2. KRİTİK NOKTA: Elemanları YENİ formun içinden seçmeliyiz
+        // Artık ekrandaki canlı elemanlar bunlar:
+        const btn = newForm.querySelector('#sendBtn');
+        const status = newForm.querySelector('#formStatus');
+        const tokenInput = newForm.querySelector('#recaptchaToken');
+        const gotchaInput = newForm.querySelector('input[name="_gotcha"]');
+        const nameInput = newForm.querySelector('#formName');
+        const emailInput = newForm.querySelector('#formEmail');
+        const messageInput = newForm.querySelector('#formMessage');
 
-                if (gotcha !== "") {
-                    console.log("Bot detected.");
-                    return;
-                }
+        // 3. Olay Dinleyicisi
+        newForm.addEventListener('submit', (e) => {
+            e.preventDefault();
 
-                btn.disabled = true;
-                btn.innerHTML = "TRANSMITTING DATA...";
-                status.innerHTML = "";
+            // Honeypot Kontrolü
+            if (gotchaInput.value !== "") return;
 
-                const formData = {
-                    name: document.getElementById('formName').value,
-                    email: document.getElementById('formEmail').value,
-                    message: document.getElementById('formMessage').value,
-                    _gotcha: gotcha
-                };
+            // Butonu kilitle
+            btn.disabled = true;
+            btn.innerHTML = "VERIFYING SECURITY...";
+            status.innerHTML = "";
 
-                try {
-                    const response = await fetch('./contact.php', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(formData)
-                    });
+            // reCAPTCHA Kontrolü
+            if (typeof grecaptcha === 'undefined') {
+                status.innerHTML = `<span style="color:#ff0000">> ERROR: reCAPTCHA not loaded. Check internet/index.html</span>`;
+                btn.disabled = false;
+                btn.innerHTML = "INITIATE TRANSMISSION";
+                return;
+            }
 
-                    const result = await response.json();
+            grecaptcha.ready(function() {
+                grecaptcha.execute('6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w', {action: 'submit'}).then(async function(token) {
 
-                    if (response.ok && result.success) {
-                        status.innerHTML = `<span style="color:#00ff00">> SUCCESS: ${result.message}</span>`;
-                        newForm.reset();
-                    } else {
-                        status.innerHTML = `<span style="color:#ff0000">> ERROR: ${result.message}</span>`;
+                    // Token'ı inputa yaz
+                    if(tokenInput) tokenInput.value = token;
+                    
+                    btn.innerHTML = "TRANSMITTING DATA...";
+
+                    const formData = {
+                        name: nameInput.value,
+                        email: emailInput.value,
+                        message: messageInput.value,
+                        recaptcha_token: token
+                    };
+
+                    try {
+                        const response = await fetch('./contact.php', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+
+                        const responseText = await response.text();
+                        let result;
+                        
+                        try {
+                            result = JSON.parse(responseText);
+                        } catch (err) {
+                            throw new Error("Server Error: " + responseText);
+                        }
+
+                        if (result.success) {
+                            status.innerHTML = `<span style="color:#00ff00; text-shadow: 0 0 5px #00ff00;">> SUCCESS: ${result.message}</span>`;
+                            newForm.reset();
+                        } else {
+                            status.innerHTML = `<span style="color:#ff0000; text-shadow: 0 0 5px #ff0000;">> ERROR: ${result.message}</span>`;
+                        }
+
+                    } catch (error) {
+                        console.error(error);
+                        status.innerHTML = `<span style="color:#ff0000">> FATAL ERROR: CONNECTION LOST.</span>`;
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = "INITIATE TRANSMISSION";
                     }
-
-                } catch (error) {
-                    status.innerHTML = `<span style="color:#ff0000">> FATAL ERROR: CONNECTION LOST.</span>`;
-                } finally {
-                    btn.disabled = false;
-                    btn.innerHTML = "INITIATE TRANSMISSION";
-                }
+                });
             });
-        }, 500);
-    }
+        });
+    }, 800);
+}
+
+
 }
 
 const app = new DiamondPortfolio();
