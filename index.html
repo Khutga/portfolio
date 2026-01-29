@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+
+    <link rel="stylesheet" href="./css/style.css?v=<?php echo time(); ?>">
+
+    <script type="module" src="./js/main.js?v=<?php echo time(); ?>"></script>
     <script src="https://www.google.com/recaptcha/api.js?render=6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w"></script>
     <meta charset="UTF-8">
     <title>Ali Seyidzade</title>
@@ -19,15 +23,15 @@
 
 <body>
     <div id="preloader">
-    <div class="loader-content">
-        <div class="loader-diamond"></div>
-        <div class="loader-text">LOADING...</div>
-        <div class="loader-bar-container">
-            <div class="loader-bar"></div>
+        <div class="loader-content">
+            <div class="loader-diamond"></div>
+            <div class="loader-text">LOADING...</div>
+            <div class="loader-bar-container">
+                <div class="loader-bar"></div>
+            </div>
+            <div class="loader-percentage">0%</div>
         </div>
-        <div class="loader-percentage">0%</div>
     </div>
-</div>
     <div id="side-panel">
         <button id="close-side-btn">&times;</button>
         <div class="content-wrapper">
