@@ -27,44 +27,37 @@ class DiamondPortfolio {
         this.init();
 
         /*Iron Dome*/
-        /* window.addEventListener('contextmenu', (e) => {
-             e.preventDefault();
-         }, false);
- 
-         window.addEventListener('dragstart', (e) => {
-             if (e.target.tagName === 'IMG') {
-                 e.preventDefault();
-                 return false;
-             }
-         });
- 
-         window.addEventListener('keydown', (e) => {
-             if (
-                 e.key === 'F12' ||
-                 (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                 (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-                 (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-                 (e.ctrlKey && e.key === 's') ||
-                 (e.ctrlKey && e.key === 'u')
-             ) {
-                 e.preventDefault();
-                 return false;
-             }
-         });
-         setInterval(() => {
-             const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
-             console.log('%c Diamond ', stil);
-         }, 2000);
- 
-         setInterval(() => {
-             const start = Date.now();
-             debugger;
-             const end = Date.now();
-             if (end - start > 100) {
-                 document.body.innerHTML = "<h1>İzinsiz giriş tespit edildi.</h1>";
-             }
-         }, 100);
-         */
+        window.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        }, false);
+
+        window.addEventListener('dragstart', (e) => {
+            if (e.target.tagName === 'IMG') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+    /*     window.addEventListener('keydown', (e) => {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        setInterval(() => {
+            const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
+            console.log('%c Diamond ', stil);
+        }, 2000);
+ */
+
+
 
         /*Iron Dome*/
     }
@@ -247,8 +240,18 @@ class DiamondPortfolio {
         }
     }
 
+
     handleDiamondClick(object, hitPoint) {
+        const hintElement = document.getElementById('interaction-hint');
+        if (hintElement) {
+            hintElement.style.opacity = '0';
+            setTimeout(() => hintElement.remove(), 500);
+        }
         const name = object.name;
+
+        if (!this.contentMap[name]) {
+            return;
+        }
 
         this.isSplitView = true;
 
@@ -257,7 +260,10 @@ class DiamondPortfolio {
             this.hoveredObject = null;
         }
 
-        this.ui.openMenu();
+        if (window.innerWidth > 768) {
+            this.ui.openMenu();
+        }
+
         this.ui.highlightItem(name);
 
         Effects.enterSplitView(
@@ -271,6 +277,7 @@ class DiamondPortfolio {
             this.sceneManager.camera,
             this.sceneManager.controls
         );
+
         setTimeout(() => {
             this.ui.initLightbox();
         }, 1200);
@@ -315,19 +322,15 @@ class DiamondPortfolio {
 
     }
 
-    // js/main.js içindeki initContactFormLogic fonksiyonu
 
     initContactFormLogic() {
         setTimeout(() => {
             const oldForm = document.getElementById('contactForm');
             if (!oldForm) return;
 
-            // 1. Formu kopyalayıp eskisinin yerine koyuyoruz (Event Listener temizliği için)
             const newForm = oldForm.cloneNode(true);
             oldForm.parentNode.replaceChild(newForm, oldForm);
 
-            // 2. KRİTİK NOKTA: Elemanları YENİ formun içinden seçmeliyiz
-            // Artık ekrandaki canlı elemanlar bunlar:
             const btn = newForm.querySelector('#sendBtn');
             const status = newForm.querySelector('#formStatus');
             const tokenInput = newForm.querySelector('#recaptchaToken');
@@ -336,7 +339,6 @@ class DiamondPortfolio {
             const emailInput = newForm.querySelector('#formEmail');
             const messageInput = newForm.querySelector('#formMessage');
 
-            // 3. Olay Dinleyicisi
             newForm.addEventListener('submit', (e) => {
                 e.preventDefault();
 
@@ -359,7 +361,6 @@ class DiamondPortfolio {
                 grecaptcha.ready(function () {
                     grecaptcha.execute('6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w', { action: 'submit' }).then(async function (token) {
 
-                        // Token'ı inputa yaz
                         if (tokenInput) tokenInput.value = token;
 
                         btn.innerHTML = "TRANSMITTING DATA...";

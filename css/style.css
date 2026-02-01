@@ -1,12 +1,12 @@
 /* Tüm resimler için koruma kalkanı */
 img {
-    -webkit-user-drag: none;  
-    user-drag: none;          
+    -webkit-user-drag: none;
+    user-drag: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    pointer-events: auto;   
+    pointer-events: auto;
 }
 
 /* Genel sayfa yapısı: Kenar boşluklarını sıfırlar ve taşmaları gizleyerek 3D sahne için temiz bir alan sağlar */
@@ -338,8 +338,13 @@ body {
 
 @media (max-width: 768px) {
     #side-panel {
-        width: 100vw;
+        width: 100%;
+        max-width: 100vw;
         right: -100%;
+        box-sizing: border-box;
+        padding: 0;
+        overflow-x: hidden;
+
     }
 
     .details-grid {
@@ -354,7 +359,7 @@ body {
 /* Başlık alanı: İsim ve Glitch efekti için kapsayıcı */
 .hero-name {
 
-    font-size: 5em;
+    font-size: 4em;
     font-weight: 900;
     line-height: 0.85;
     letter-spacing: -3px;
@@ -715,12 +720,12 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85); 
+    background: rgba(0, 0, 0, 0.85);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 10000;
-    backdrop-filter: blur(8px); 
+    backdrop-filter: blur(8px);
     cursor: pointer;
 }
 
@@ -811,12 +816,19 @@ body {
 }
 
 @keyframes loader-spin {
-    to { transform: rotateY(360deg); }
+    to {
+        transform: rotateY(360deg);
+    }
 }
 
 @keyframes loader-glow {
-    from { filter: drop-shadow(0 0 5px #00ffff); }
-    to { filter: drop-shadow(0 0 20px #00ffff); }
+    from {
+        filter: drop-shadow(0 0 5px #00ffff);
+    }
+
+    to {
+        filter: drop-shadow(0 0 20px #00ffff);
+    }
 }
 
 /*Ekran küçükse*/
@@ -826,105 +838,212 @@ body {
 
 @media (max-width: 768px) {
 
-    .pill-row, .tag-cloud {
+    .pill-row,
+    .tag-cloud {
         display: flex !important;
-        flex-wrap: wrap !important; /* Sığmayan kutu komple aşağı düşsün */
+        flex-wrap: wrap !important;
+        /* Sığmayan kutu komple aşağı düşsün */
         gap: 8px !important;
         justify-content: flex-start !important;
     }
 
     /* 2. Etiketlerin Kendisini Koruma Altına Al */
     /* .tag-cloud .pill diyerek önceliği artırıyoruz ki diğer kodlar ezemesin */
-    .pill, .tag-cloud .pill, .pill-row .pill {
-        white-space: nowrap !important;  /* ASLA satır başı yapma */
-        display: inline-block !important; /* Blok gibi davran, yazı gibi bölünme */
-        font-size: 0.80rem !important;   /* Yazıyı biraz daha küçültüp sığmasını sağla */
+    .pill,
+    .tag-cloud .pill,
+    .pill-row .pill {
+        white-space: nowrap !important;
+        /* ASLA satır başı yapma */
+        display: inline-block !important;
+        /* Blok gibi davran, yazı gibi bölünme */
+        font-size: 0.80rem !important;
+        /* Yazıyı biraz daha küçültüp sığmasını sağla */
         padding: 6px 10px !important;
-        width: auto !important;          /* Genişlik içeriğe göre olsun */
-        flex-shrink: 0 !important;       /* Sıkışıp büzülme */
+        width: auto !important;
+        /* Genişlik içeriğe göre olsun */
+        flex-shrink: 0 !important;
+        /* Sıkışıp büzülme */
         line-height: 1.2 !important;
     }
 
     /* 3. Kartların İçindeki Taşmayı Önle */
     .matrix-item {
-        overflow: hidden !important; /* Eğer yine de taşarsa kartın dışına çıkmasın */
+        overflow: hidden !important;
+        /* Eğer yine de taşarsa kartın dışına çıkmasın */
         padding: 15px !important;
     }
 
-     .content-wrapper {
-        padding: 80px 20px; 
+    body, html {
+        overflow-x: hidden;
+        position: fixed; /* iOS safari bounce efektini engellemek için gerekebilir */
+        width: 100%;
+        height: 100%;
+    }
+
+    img, .project-img, .profile-img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .content-wrapper {
+        width: 100%;
+        box-sizing: border-box;
+        /* Çok önemli */
+        padding: 80px 20px 40px 20px !important;
+        /* Üst, Sağ, Alt, Sol boşluklar */
+        overflow-x: hidden;
     }
 
     .pill {
-        white-space: nowrap !important; /* KRİTİK KOD: Metin asla bölünmesin (UI/UX Optimization tek satır kalır) */
-        font-size: 0.85rem !important;  /* Yazıyı okunur hale getir */
-        padding: 8px 12px !important;   /* İç boşluğu dengele */
-        display: inline-block;          /* Hizalamayı düzelt */
-        flex-shrink: 0;                 /* Kutunun sıkışıp küçülmesini engelle */
+        white-space: nowrap !important;
+        /* KRİTİK KOD: Metin asla bölünmesin (UI/UX Optimization tek satır kalır) */
+        font-size: 0.85rem !important;
+        /* Yazıyı okunur hale getir */
+        padding: 8px 12px !important;
+        /* İç boşluğu dengele */
+        display: inline-block;
+        /* Hizalamayı düzelt */
+        flex-shrink: 0;
+        /* Kutunun sıkışıp küçülmesini engelle */
     }
 
     /* 2. KUTUCUKLARIN DİZİLDİĞİ SATIRI DÜZENLE */
     .pill-row {
         display: flex !important;
-        flex-wrap: wrap !important;     /* Sığmayan kutu BÜTÜN HALDE aşağı insin */
-        gap: 10px !important;            /* Kutular birbirine yapışmasın */
-        justify-content: flex-start;    /* Sola hizalı olsun */
+        flex-wrap: wrap !important;
+        /* Sığmayan kutu BÜTÜN HALDE aşağı insin */
+        gap: 10px !important;
+        /* Kutular birbirine yapışmasın */
+        justify-content: flex-start;
+        /* Sola hizalı olsun */
     }
+
     /* 1. Izgara yapısını tek sütuna düşür ve taşmayı önle */
     .matrix-grid {
-        grid-template-columns: 1fr !important;
-        gap: 15px;
-        padding: 0 5px; /* Yanlardan hafif boşluk */
+        display: flex !important;
+        /* Grid yerine Flex column daha stabil olabilir mobilde */
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* 2. Kartların iç boşluğunu azalt (Daha fazla alan kalsın) */
     .matrix-item {
-        padding: 15px !important; /* Masaüstünde 25-30px idi, düşürdük */
-        margin-bottom: 10px;
+        width: 100%;
+        box-sizing: border-box; /* Kutuların taşmasını engeller */
+        margin: 0 !important;
     }
 
     /* 3. Yazı boyutlarını okunabilir hale getir */
     .matrix-body {
-        font-size: 1.15rem !important; /* Yazı boyutunu artırdık */
+        font-size: 1.15rem !important;
+        /* Yazı boyutunu artırdık */
         line-height: 1.5;
     }
 
     .matrix-head {
-        font-size: 1.1rem !important; /* Başlıkları belirginleştir */
+        font-size: 1.1rem !important;
+        /* Başlıkları belirginleştir */
         margin-bottom: 15px;
     }
 
     /* 4. Etiketleri (Pill) büyüt ve aralarını aç */
     .pill {
-        font-size: 0.85rem !important; /* Çok küçüktü, büyüttük */
-        padding: 8px 14px !important; /* Dokunması kolay olsun */
+        font-size: 0.85rem !important;
+        /* Çok küçüktü, büyüttük */
+        padding: 8px 14px !important;
+        /* Dokunması kolay olsun */
         margin: 4px 2px;
     }
 
     .tag-cloud {
-        gap: 8px; /* Etiketler birbirine yapışmasın */
+        gap: 8px;
+        /* Etiketler birbirine yapışmasın */
     }
 
     /* 5. About (Hakkımda) kısmındaki profil kartını düzelt */
     .about-profile-card {
         padding: 20px !important;
-        flex-direction: column !important; /* Resmi ve yazıyı alt alta al */
+        flex-direction: column !important;
+        /* Resmi ve yazıyı alt alta al */
     }
 
     .profile-img-wrapper {
-        width: 120px !important; /* Resmi mobilde biraz küçült */
+        width: 120px !important;
+        /* Resmi mobilde biraz küçült */
         height: 120px !important;
         margin-bottom: 20px;
     }
 
     .about-text {
-        font-size: 1.1rem !important; /* Hakkımda yazısını büyüt */
-        text-align: left; /* Mobilde ortalı yazı zor okunur, sola yasla */
+        font-size: 1.1rem !important;
+        /* Hakkımda yazısını büyüt */
+        text-align: left;
+        /* Mobilde ortalı yazı zor okunur, sola yasla */
     }
-    
+
+    body {
+        position: relative; 
+        overflow: hidden; /* Three.js canvas için */
+    }
+
     /* 6. Proje resimlerinin oranını koru */
     .project-image-wrapper {
         height: auto !important;
         min-height: 200px;
     }
+}
+
+.grecaptcha-badge { 
+    visibility: hidden;
+}
+
+/* css/style.css en alta ekle */
+
+#interaction-hint {
+    position: fixed;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+    letter-spacing: 3px;
+    pointer-events: none; /* Tıklamayı engellemesin */
+    z-index: 5000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    animation: fade-in-out 3s infinite;
+}
+
+.hint-pulse {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    position: relative;
+    animation: hint-ripple 2s infinite;
+}
+
+.hint-pulse::after {
+    content: '👆🏼'; 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.2rem;
+}
+
+@keyframes hint-ripple {
+    0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(0, 255, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+}
+
+@keyframes fade-in-out {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
 }

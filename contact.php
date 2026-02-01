@@ -1,8 +1,8 @@
 <?php
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0); 
+ini_set('display_startup_errors', 0);
+error_reporting(0); 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
@@ -59,9 +59,9 @@ if (isset($_SESSION['last_submit_time']) && (time() - $_SESSION['last_submit_tim
     sendResponse(false, "Traffic Jam. Please wait 1 minute.", 429);
 }
 
-$name = isset($data->name) ? strip_tags(trim($data->name)) : '';
+$name = isset($data->name) ? htmlspecialchars(trim($data->name)) : '';
 $email = isset($data->email) ? filter_var(trim($data->email), FILTER_SANITIZE_EMAIL) : '';
-$message = isset($data->message) ? strip_tags(trim($data->message)) : '';
+$message = isset($data->message) ? htmlspecialchars(trim($data->message)) : '';
 
 if (empty($name) || empty($email) || empty($message)) {
     sendResponse(false, "Incomplete Data Packet.", 400);

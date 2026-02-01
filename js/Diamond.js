@@ -35,12 +35,11 @@ export class Diamond {
                         transmission: 1.0,
                         thickness: 2.5,
                         ior: 2.417,
-
+                        emissive: 0x000000,
+                        emissiveIntensity: 0,
                         dispersion: 7.0,
-
                         attenuationColor: 0x7afbf4,
                         attenuationDistance: 0.5,
-
                         clearcoat: 1.0,
                         clearcoatRoughness: 0,
                         envMapIntensity: 2.0,

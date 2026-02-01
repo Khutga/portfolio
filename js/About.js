@@ -142,7 +142,7 @@ export const About = {
             <div class="about-content">
                 <div class="block-label" style="margin-top:0">|| WHO AM I?</div>
                 <p class="about-text">
-                    I am <span class="highlight">Ali Seyidzade</span>. As a passionate and fast-learning <span class="highlight">Full-Stack Developer</span>, I specialize in creating high-performance, feature-rich applications using <span class="highlight">Dart</span> and <span class="highlight">Flutter</span>.
+                    As a passionate and fast-learning <span class="highlight">Full-Stack Developer</span>, I specialize in creating high-performance, feature-rich applications using <span class="highlight">Dart</span> and <span class="highlight">Flutter</span>.
                 </p>
                 <p class="about-text">
                     In all my projects, I focus on <span class="highlight">intuitive UI/UX design</span> and robust backend services to ensure optimized performance.

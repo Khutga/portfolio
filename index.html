@@ -2,23 +2,25 @@
 <html lang="en">
 
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/style.css?v=<?php echo time(); ?>">
-
-    <script type="module" src="./js/main.js?v=<?php echo time(); ?>"></script>
-    <script src="https://www.google.com/recaptcha/api.js?render=6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w"></script>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ali Seyidzade</title>
-    <link rel="stylesheet" href="./css/style.css">
+
     <script type="importmap">
         {
             "imports": {
-                "three": "https://unpkg.com/three@0.164.0/build/three.module.js",
-                "three/addons/": "https://unpkg.com/three@0.164.0/examples/jsm/",
+                "three": "https://unpkg.com/three@0.172.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.172.0/examples/jsm/",
                 "gsap": "https://esm.sh/gsap"
             }
         }
     </script>
+
+    <link rel="stylesheet" href="./css/style.css">
+
+    <script src="https://www.google.com/recaptcha/api.js?render=6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w"></script>
+
+    <script type="module" src="./js/main.js"></script>
 </head>
 
 <body>
@@ -42,6 +44,10 @@
     <div id="image-lightbox" class="image-modal">
         <img src="" alt="Preview">
     </div>
+    <div id="interaction-hint">
+    <div class="hint-pulse"></div>
+    <span>MENÜ İÇİN ELMASA TIKLA</span>
+</div>
 
 </body>
 

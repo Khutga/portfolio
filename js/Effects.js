@@ -42,7 +42,7 @@ export class Effects {
         return { mesh: laserMesh, core: coreMesh, mat: material, coreMat: coreMat };
     }
 
-   static enterSplitView(diamond, laserLight, hitPoint, ui, targetId, sunPosition, scene, camera, controls) {
+    static enterSplitView(diamond, laserLight, hitPoint, ui, targetId, sunPosition, scene, camera, controls) {
 
         if (controls) {
             controls.enabled = false;
@@ -104,7 +104,7 @@ export class Effects {
                 ui.openPanel();
                 ui.scrollToSection(targetId);
             }, null, "start+=0.4")
-            
+
             .to([laserObj.mat, laserObj.coreMat], { opacity: 0, duration: 0.4 }, "start+=0.8")
             .to([ricochetObj.mat, ricochetObj.coreMat], { opacity: 0, duration: 0.4 }, "start+=0.8")
             .to(laserLight, { intensity: 0, duration: 0.5 }, "start+=0.8")
@@ -143,24 +143,26 @@ export class Effects {
     }
 
 
-static hoverEffect(object, isHovering) {
-    if (!object || !object.material) return;
+    static hoverEffect(object, isHovering) {
+        if (!object || !object.material) return;
 
-    if (object.material.emissive === undefined) return;
+        if (isHovering) {
+            object.material.emissive = new THREE.Color(0xffffff);
 
-    if (isHovering) {
-        gsap.to(object.material, {
-            emissiveIntensity: 1.5,
-            duration: 0.3,
-            overwrite: true
-        });
-        object.material.emissive = new THREE.Color(0x00ffff); 
-    } else {
-        gsap.to(object.material, {
-            emissiveIntensity: 0,
-            duration: 0.5,
-            overwrite: true
-        });
+            gsap.to(object.material, {
+                emissiveIntensity: 2.0, 
+                duration: 0.3,
+                transmission: 0.2,
+                overwrite: true
+            });
+        }
+        else {
+            gsap.to(object.material, {
+                emissiveIntensity: 0, 
+                duration: 0.5,
+                transmission: 1,
+                overwrite: true
+            });
+        }
     }
-}
 }

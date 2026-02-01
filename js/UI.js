@@ -87,7 +87,12 @@ export class UI {
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-page'));
                 btn.classList.add('active-page');
                 this.highlightItem(item.id);
-                
+                if (window.innerWidth < 768) {
+                    menuContainer.classList.remove('open');
+                    const menuBtn = document.querySelector('.diamond-menu-btn');
+                    if (menuBtn) menuBtn.classList.remove('menu-active');
+                }
+
             });
 
             menuContainer.appendChild(btn);
@@ -102,46 +107,46 @@ export class UI {
     }
 
 
-   initLightbox() {
-    const lightbox = document.getElementById('image-lightbox');
-    const lightboxImg = lightbox.querySelector('img');
-    const projectImages = document.querySelectorAll('.project-img');
+    initLightbox() {
+        const lightbox = document.getElementById('image-lightbox');
+        const lightboxImg = lightbox.querySelector('img');
+        const projectImages = document.querySelectorAll('.project-img');
 
-    if (!lightbox || !lightboxImg) return;
+        if (!lightbox || !lightboxImg) return;
 
-    projectImages.forEach(img => {
-        img.onclick = (e) => {
-            e.stopPropagation();
-            const src = img.getAttribute('src');
-            lightboxImg.src = src;
+        projectImages.forEach(img => {
+            img.onclick = (e) => {
+                e.stopPropagation();
+                const src = img.getAttribute('src');
+                lightboxImg.src = src;
 
-            gsap.set(lightbox, { display: 'flex', opacity: 0 });
-            
-            gsap.to(lightbox, { opacity: 1, duration: 0.3 });
-            gsap.fromTo(lightboxImg,
-                { scale: 0.8, opacity: 0 },
-                { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }
-            );
-        };
-    });
+                gsap.set(lightbox, { display: 'flex', opacity: 0 });
 
-    const closeLightbox = () => {
-        gsap.to(lightbox, {
-            opacity: 0,
-            duration: 0.3,
-            onComplete: () => {
-                lightbox.style.display = 'none';
-                lightboxImg.src = ""; 
-            }
+                gsap.to(lightbox, { opacity: 1, duration: 0.3 });
+                gsap.fromTo(lightboxImg,
+                    { scale: 0.8, opacity: 0 },
+                    { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }
+                );
+            };
         });
-    };
 
-    lightbox.onclick = closeLightbox;
+        const closeLightbox = () => {
+            gsap.to(lightbox, {
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => {
+                    lightbox.style.display = 'none';
+                    lightboxImg.src = "";
+                }
+            });
+        };
 
-    lightboxImg.onclick = (e) => {
-        e.stopPropagation();
-    };
-}
+        lightbox.onclick = closeLightbox;
+
+        lightboxImg.onclick = (e) => {
+            e.stopPropagation();
+        };
+    }
 
     openMenu() {
         const menuContainer = document.querySelector('.nav-menu');

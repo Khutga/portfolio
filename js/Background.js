@@ -61,7 +61,8 @@ export class Background {
 
 
     createColoredStars() {
-        const count = 6000;
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 100 : 6000;
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
         const sizes = new Float32Array(count);
@@ -108,7 +109,8 @@ export class Background {
     }
 
     createDustClouds() {
-        const particleCount = 800;
+        const isMobile = window.innerWidth < 768;
+        const particleCount = isMobile ? 100 : 800;
         const positions = new Float32Array(particleCount * 3);
 
         for (let i = 0; i < particleCount * 3; i += 3) {
@@ -152,7 +154,8 @@ export class Background {
     }
 
     createTwinklingStars() {
-        const count = 200;
+        const isMobile = window.innerWidth < 768;
+        const count = isMobile ? 50 : 200;
         const positions = new Float32Array(count * 3);
         const twinkleData = new Float32Array(count * 2);
 
