@@ -818,3 +818,113 @@ body {
     from { filter: drop-shadow(0 0 5px #00ffff); }
     to { filter: drop-shadow(0 0 20px #00ffff); }
 }
+
+/*Ekran küçükse*/
+
+
+/* --- MOBİL DÜZELTMELERİ --- */
+
+@media (max-width: 768px) {
+
+    .pill-row, .tag-cloud {
+        display: flex !important;
+        flex-wrap: wrap !important; /* Sığmayan kutu komple aşağı düşsün */
+        gap: 8px !important;
+        justify-content: flex-start !important;
+    }
+
+    /* 2. Etiketlerin Kendisini Koruma Altına Al */
+    /* .tag-cloud .pill diyerek önceliği artırıyoruz ki diğer kodlar ezemesin */
+    .pill, .tag-cloud .pill, .pill-row .pill {
+        white-space: nowrap !important;  /* ASLA satır başı yapma */
+        display: inline-block !important; /* Blok gibi davran, yazı gibi bölünme */
+        font-size: 0.80rem !important;   /* Yazıyı biraz daha küçültüp sığmasını sağla */
+        padding: 6px 10px !important;
+        width: auto !important;          /* Genişlik içeriğe göre olsun */
+        flex-shrink: 0 !important;       /* Sıkışıp büzülme */
+        line-height: 1.2 !important;
+    }
+
+    /* 3. Kartların İçindeki Taşmayı Önle */
+    .matrix-item {
+        overflow: hidden !important; /* Eğer yine de taşarsa kartın dışına çıkmasın */
+        padding: 15px !important;
+    }
+
+     .content-wrapper {
+        padding: 80px 20px; 
+    }
+
+    .pill {
+        white-space: nowrap !important; /* KRİTİK KOD: Metin asla bölünmesin (UI/UX Optimization tek satır kalır) */
+        font-size: 0.85rem !important;  /* Yazıyı okunur hale getir */
+        padding: 8px 12px !important;   /* İç boşluğu dengele */
+        display: inline-block;          /* Hizalamayı düzelt */
+        flex-shrink: 0;                 /* Kutunun sıkışıp küçülmesini engelle */
+    }
+
+    /* 2. KUTUCUKLARIN DİZİLDİĞİ SATIRI DÜZENLE */
+    .pill-row {
+        display: flex !important;
+        flex-wrap: wrap !important;     /* Sığmayan kutu BÜTÜN HALDE aşağı insin */
+        gap: 10px !important;            /* Kutular birbirine yapışmasın */
+        justify-content: flex-start;    /* Sola hizalı olsun */
+    }
+    /* 1. Izgara yapısını tek sütuna düşür ve taşmayı önle */
+    .matrix-grid {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+        padding: 0 5px; /* Yanlardan hafif boşluk */
+    }
+
+    /* 2. Kartların iç boşluğunu azalt (Daha fazla alan kalsın) */
+    .matrix-item {
+        padding: 15px !important; /* Masaüstünde 25-30px idi, düşürdük */
+        margin-bottom: 10px;
+    }
+
+    /* 3. Yazı boyutlarını okunabilir hale getir */
+    .matrix-body {
+        font-size: 1.15rem !important; /* Yazı boyutunu artırdık */
+        line-height: 1.5;
+    }
+
+    .matrix-head {
+        font-size: 1.1rem !important; /* Başlıkları belirginleştir */
+        margin-bottom: 15px;
+    }
+
+    /* 4. Etiketleri (Pill) büyüt ve aralarını aç */
+    .pill {
+        font-size: 0.85rem !important; /* Çok küçüktü, büyüttük */
+        padding: 8px 14px !important; /* Dokunması kolay olsun */
+        margin: 4px 2px;
+    }
+
+    .tag-cloud {
+        gap: 8px; /* Etiketler birbirine yapışmasın */
+    }
+
+    /* 5. About (Hakkımda) kısmındaki profil kartını düzelt */
+    .about-profile-card {
+        padding: 20px !important;
+        flex-direction: column !important; /* Resmi ve yazıyı alt alta al */
+    }
+
+    .profile-img-wrapper {
+        width: 120px !important; /* Resmi mobilde biraz küçült */
+        height: 120px !important;
+        margin-bottom: 20px;
+    }
+
+    .about-text {
+        font-size: 1.1rem !important; /* Hakkımda yazısını büyüt */
+        text-align: left; /* Mobilde ortalı yazı zor okunur, sola yasla */
+    }
+    
+    /* 6. Proje resimlerinin oranını koru */
+    .project-image-wrapper {
+        height: auto !important;
+        min-height: 200px;
+    }
+}

@@ -55,6 +55,12 @@ export class SceneManager {
         this.camera.aspect = window.innerWidth / window.innerHeight;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+        if (window.innerWidth < 768) {
+            this.camera.position.z = 4.5;
+        } else {
+            this.camera.position.z = 2.5;
+        }
     }
 
     render() {

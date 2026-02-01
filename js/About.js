@@ -145,10 +145,7 @@ export const About = {
                     I am <span class="highlight">Ali Seyidzade</span>. As a passionate and fast-learning <span class="highlight">Full-Stack Developer</span>, I specialize in creating high-performance, feature-rich applications using <span class="highlight">Dart</span> and <span class="highlight">Flutter</span>.
                 </p>
                 <p class="about-text">
-                    I have developed solutions featuring <span class="highlight">real-time map services</span>, secure communication, and payment processing, designed with driver, customer, and admin interfaces for a seamless user experience. I also deliver smooth video content with advanced controls and subscription management.
-                </p>
-                <p class="about-text">
-                    In all my projects, I focus on <span class="highlight">intuitive UI/UX design</span> and robust backend services to ensure optimized performance. I’m fluent in English, Azerbaijani, Turkish, and have basic knowledge of Russian.
+                    In all my projects, I focus on <span class="highlight">intuitive UI/UX design</span> and robust backend services to ensure optimized performance.
                 </p>
             </div>
         </div>
