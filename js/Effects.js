@@ -143,24 +143,27 @@ export class Effects {
     }
 
 
-    static hoverEffect(object, isHovering) {
+   static hoverEffect(object, isHovering) {
         if (!object || !object.material) return;
 
         if (isHovering) {
-            object.material.emissive = new THREE.Color(0xffffff);
 
             gsap.to(object.material, {
-                emissiveIntensity: 2.0, 
-                duration: 0.3,
-                transmission: 0.2,
+                emissiveIntensity: 4.0, 
+                transmission: 0.0,      
+                opacity: 1.0,
+                roughness: 0.2,       
+                duration: 0.05,
                 overwrite: true
             });
         }
         else {
             gsap.to(object.material, {
-                emissiveIntensity: 0, 
+                emissiveIntensity: 0,   
+                transmission: 1.0,     
+                opacity: 1.0,
+                roughness: 0.02,        
                 duration: 0.5,
-                transmission: 1,
                 overwrite: true
             });
         }

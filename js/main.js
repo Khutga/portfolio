@@ -38,24 +38,24 @@ class DiamondPortfolio {
             }
         });
 
-    /*     window.addEventListener('keydown', (e) => {
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-                (e.ctrlKey && e.key === 's') ||
-                (e.ctrlKey && e.key === 'u')
-            ) {
-                e.preventDefault();
-                return false;
-            }
-        });
-        setInterval(() => {
-            const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
-            console.log('%c Diamond ', stil);
-        }, 2000);
- */
+        /*     window.addEventListener('keydown', (e) => {
+                if (
+                    e.key === 'F12' ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                    (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                    (e.ctrlKey && e.key === 's') ||
+                    (e.ctrlKey && e.key === 'u')
+                ) {
+                    e.preventDefault();
+                    return false;
+                }
+            });
+            setInterval(() => {
+                const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
+                console.log('%c Diamond ', stil);
+            }, 2000);
+     */
 
 
 
@@ -94,8 +94,6 @@ class DiamondPortfolio {
         this.ui.renderOnePageContent(this.contentMap);
         this.ui.initLightbox();
 
-        window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        window.addEventListener('click', (e) => this.onClick(e));
         this.animate();
 
     }
@@ -113,10 +111,14 @@ class DiamondPortfolio {
         };
 
         manager.onLoad = () => {
+            if (this.diamond) {
+                this.diamond.warmUp();
+            }
+
             gsap.to(preloader, {
                 opacity: 0,
                 duration: 1,
-                delay: 0.5,
+                delay: 0.5, 
                 ease: "power2.inOut",
                 onComplete: () => {
                     preloader.style.display = 'none';
@@ -167,29 +169,37 @@ class DiamondPortfolio {
                 this.hoveredObject = null;
             }
             return;
-        };
+        }
 
-        const rect = this.sceneManager.renderer.domElement.getBoundingClientRect();
-        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        this.mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
+        
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
 
-        document.body.style.cursor = intersects.length > 0 ? 'pointer' : 'default';
+        let hit = intersects.find(i => this.contentMap && this.contentMap[i.object.name]);
+        if (!hit) {
+            hit = intersects.find(i => i.object.name && i.object.name.startsWith('Face_'));
+        }
 
-        if (intersects.length > 0) {
+        if (hit) {
             document.body.style.cursor = 'pointer';
-            if (this.hoveredObject !== intersects[0].object) {
+
+            if (this.hoveredObject !== hit.object) {
                 if (this.hoveredObject) Effects.hoverEffect(this.hoveredObject, false);
-                this.hoveredObject = intersects[0].object;
+                
+                this.hoveredObject = hit.object;
                 Effects.hoverEffect(this.hoveredObject, true);
             }
-        } else if (this.hoveredObject) {
+        } else {
             document.body.style.cursor = 'default';
-            Effects.hoverEffect(this.hoveredObject, false);
-            this.hoveredObject = null;
+            if (this.hoveredObject) {
+                Effects.hoverEffect(this.hoveredObject, false);
+                this.hoveredObject = null;
+            }
         }
+
         const x = (event.clientX / window.innerWidth) - 0.5;
         const y = (event.clientY / window.innerHeight) - 0.5;
 

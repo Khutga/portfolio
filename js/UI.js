@@ -15,12 +15,37 @@ export class UI {
         this.createNavMenu();
     }
 
-    init() {
+   init() {
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => {
                 if (this.onClose) this.onClose();
             });
         }
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchEndX = 0;
+        let touchEndY = 0;
+
+        this.sidePanel.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        }, { passive: true });
+
+        this.sidePanel.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            touchEndY = e.changedTouches[0].screenY;
+            handleSwipe();
+        }, { passive: true });
+
+        const handleSwipe = () => {
+            const xDiff = touchEndX - touchStartX;
+            const yDiff = Math.abs(touchEndY - touchStartY);
+
+            if (xDiff > 60 && yDiff < 60) {
+                if (this.onClose) this.onClose();
+            }
+        };
 
         this.sidePanel.addEventListener('scroll', () => {
             if (this.isManualScrolling) return;

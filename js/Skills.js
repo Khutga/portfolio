@@ -1,5 +1,5 @@
 export const Skills = {
-    header: "", 
+    header: "",
     body: `
         <div class="skills-wrapper">
             <section class="skills-hero">
@@ -16,7 +16,6 @@ export const Skills = {
             <section class="skills-block">
                 <div class="block-label">|| CORE PROFILE</div>
                 <p class="summary-para">
-                    As a passionate and fast-learning <span class="highlight">Full-Stack Developer</span>, I specialize in creating high-performance, feature-rich applications within the <span class="highlight">Dart & Flutter ecosystem</span>. 
                     I architect robust mobile infrastructures, integrating complex systems such as real-time map services, secure multi-interface (driver/customer/admin) architectures, 
                     and advanced video streaming with secure payment processing.
                 </p>
