@@ -37,26 +37,6 @@ class DiamondPortfolio {
                 return false;
             }
         });
-
-        window.addEventListener('keydown', (e) => {
-            if (
-                e.key === 'F12' ||
-                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-                (e.ctrlKey && e.key === 's') ||
-                (e.ctrlKey && e.key === 'u')
-            ) {
-                e.preventDefault();
-                return false;
-            }
-        });
-        setInterval(() => {
-            const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
-            console.log('%c Diamond ', stil);
-        }, 2000);
-
-
         /*            */
     }
 
@@ -104,7 +84,7 @@ class DiamondPortfolio {
 
         manager.onProgress = (url, itemsLoaded, itemsTotal) => {
             const progress = (itemsLoaded / itemsTotal) * 100;
-            loaderBar.style.width = progress + '%';
+            loaderBar.style.transform = `scaleX(${progress / 100})`;
             loaderPercentage.innerText = Math.round(progress) + '%';
         };
 
@@ -373,6 +353,15 @@ class DiamondPortfolio {
 
 
     initContactFormLogic() {
+
+        if (document.getElementById('recaptcha-script')) return;
+
+        const script = document.createElement('script');
+        script.id = 'recaptcha-script';
+        script.src = "https://www.google.com/recaptcha/api.js?render=6LdYPVosAAAAABR9SpfZdem6jkRJwESVBEgft29w";
+        script.async = true;
+        script.defer = true;
+        document.body.appendChild(script);
         setTimeout(() => {
             const oldForm = document.getElementById('contactForm');
             if (!oldForm) return;

@@ -9,12 +9,27 @@ export class SceneManager {
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
         this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         this.controls = null;
-        this.contentScreen = null;  
-        
+        this.contentScreen = null;
+
         this.init();
     }
 
     init() {
+        const pixelRatio = Math.min(window.devicePixelRatio, 2);
+
+        const isMobile = window.innerWidth < 768;
+
+        this.renderer = new THREE.WebGLRenderer({
+            antialias: !isMobile,
+            alpha: true,
+            powerPreference: "high-performance",
+            stencil: false,
+            depth: true
+        });
+
+        this.renderer.setPixelRatio(pixelRatio);
+        this.renderer.setSize(window.innerWidth, window.innerHeight);
+
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.6;
@@ -31,21 +46,21 @@ export class SceneManager {
         const environment = new RoomEnvironment();
         this.scene.environment = pmremGenerator.fromScene(environment).texture;
 
-        this.createContentScreen(); 
+        this.createContentScreen();
 
         window.addEventListener('resize', () => this.onWindowResize());
     }
 
     createContentScreen() {
-        const geometry = new THREE.PlaneGeometry(1, 1); 
+        const geometry = new THREE.PlaneGeometry(1, 1);
         const material = new THREE.MeshBasicMaterial({
             transparent: true,
             opacity: 0,
             side: THREE.DoubleSide,
-            depthTest: false, 
+            depthTest: false,
             blending: THREE.NormalBlending
         });
-        
+
         this.contentScreen = new THREE.Mesh(geometry, material);
         this.contentScreen.renderOrder = 999;
         this.scene.add(this.contentScreen);

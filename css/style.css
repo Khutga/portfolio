@@ -99,7 +99,7 @@ body {
     }
 
     50% {
-        top: 25px;
+        transform: translateY(-10px);
     }
 
 }
@@ -110,6 +110,7 @@ body {
     left: 35px;
     width: 70px;
     height: 65px;
+    top: 35px;
     z-index: 2001;
     cursor: pointer;
     background-color: #00ffff;
@@ -474,7 +475,8 @@ body {
     content: '';
     position: absolute;
     top: 0;
-    left: -100%;
+    left: 0;
+    transform: translateX(-100%);
     width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, #fff, transparent);
@@ -600,11 +602,11 @@ body {
 
 @keyframes scan-line {
     0% {
-        left: -100%;
+        transform: translateX(-100%);
     }
 
     100% {
-        left: 100%;
+        transform: translateX(100%);
     }
 }
 
@@ -798,11 +800,13 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    width: 0%;
+    width: 100%;
+    transform: scaleX(0);
+    transform-origin: left;
     height: 100%;
     background: #00ffff;
     box-shadow: 0 0 15px #00ffff;
-    transition: width 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
 .loader-percentage {
@@ -835,23 +839,23 @@ body {
 @media (max-width: 768px) {
 
     .nav-btn {
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.7);
-    background: transparent;
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    text-align: left;
-    padding: 10px;
-    border-left: 2px solid transparent;
-    transition: 0.3s;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    position: relative;
-}
+        background: transparent;
+        border: none;
+        color: rgba(255, 255, 255, 0.7);
+        background: transparent;
+        font-family: 'Segoe UI', sans-serif;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-align: left;
+        padding: 10px;
+        border-left: 2px solid transparent;
+        transition: 0.3s;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        position: relative;
+    }
 
     .pill-row,
     .tag-cloud {
@@ -888,14 +892,18 @@ body {
         padding: 15px !important;
     }
 
-    body, html {
+    body,
+    html {
         overflow-x: hidden;
-        position: fixed; /* iOS safari bounce efektini engellemek için gerekebilir */
+        position: fixed;
+        /* iOS safari bounce efektini engellemek için gerekebilir */
         width: 100%;
         height: 100%;
     }
 
-    img, .project-img, .profile-img {
+    img,
+    .project-img,
+    .profile-img {
         max-width: 100%;
         height: auto;
     }
@@ -946,7 +954,8 @@ body {
     /* 2. Kartların iç boşluğunu azalt (Daha fazla alan kalsın) */
     .matrix-item {
         width: 100%;
-        box-sizing: border-box; /* Kutuların taşmasını engeller */
+        box-sizing: border-box;
+        /* Kutuların taşmasını engeller */
         margin: 0 !important;
     }
 
@@ -999,8 +1008,9 @@ body {
     }
 
     body {
-        position: relative; 
-        overflow: hidden; /* Three.js canvas için */
+        position: relative;
+        overflow: hidden;
+        /* Three.js canvas için */
     }
 
     /* 6. Proje resimlerinin oranını koru */
@@ -1010,7 +1020,7 @@ body {
     }
 }
 
-.grecaptcha-badge { 
+.grecaptcha-badge {
     visibility: hidden;
 }
 
@@ -1033,8 +1043,10 @@ body {
 /* Sahne Alanı (Büyütüldü) */
 .hint-scene {
     position: relative;
-    width: 90px;  /* 60px -> 90px */
-    height: 65px; /* 70px -> 110px */
+    width: 90px;
+    /* 60px -> 90px */
+    height: 65px;
+    /* 70px -> 110px */
 }
 
 /* 1. Kristal (Büyütüldü) */
@@ -1043,8 +1055,10 @@ body {
     left: 50%;
     top: 0;
     transform: translateX(-50%);
-    width: 42px;   /* 28px -> 42px */
-    height: 72px;  /* 48px -> 72px */
+    width: 42px;
+    /* 28px -> 42px */
+    height: 72px;
+    /* 48px -> 72px */
     filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4));
     animation: crystal-pulse 2s infinite ease-in-out;
 }
@@ -1052,10 +1066,10 @@ body {
 /* 2. Barmaq İkonu (Büyütüldü ve Konumu Ayarlandı) */
 .hand-pointer {
     position: absolute;
-    width: 32px;  
-    height: 32px; 
-    top: 38px;   
-    left: 28px;   
+    width: 32px;
+    height: 32px;
+    top: 38px;
+    left: 28px;
     filter: drop-shadow(0 0 4px #00ffff);
     transform-origin: top left;
     animation: tap-motion 2s infinite ease-in-out;
@@ -1064,11 +1078,13 @@ body {
 /* 3. Toxunma İşığı (Büyütüldü) */
 .contact-glow {
     position: absolute;
-    top: 45px;     
+    top: 45px;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 30px;   /* 20px -> 30px */
-    height: 30px;  /* 20px -> 30px */
+    width: 30px;
+    /* 20px -> 30px */
+    height: 30px;
+    /* 20px -> 30px */
     background: #fff;
     border-radius: 50%;
     opacity: 0;
@@ -1092,28 +1108,76 @@ body {
 /* --- Animasiyalar (Hərəkət məsafələri də artırıldı) --- */
 
 @keyframes tap-motion {
-    0% { transform: translate(22px, 22px) scale(1); opacity: 0; } /* Daha uzaqdan gəlir */
-    20% { transform: translate(22px, 22px) scale(1); opacity: 1; }
-    40% { transform: translate(0, 0) scale(0.9); } /* Toxunma */
-    50% { transform: translate(0, 0) scale(0.9); }
-    100% { transform: translate(22px, 22px) scale(1); opacity: 0; }
+    0% {
+        transform: translate(22px, 22px) scale(1);
+        opacity: 0;
+    }
+
+    /* Daha uzaqdan gəlir */
+    20% {
+        transform: translate(22px, 22px) scale(1);
+        opacity: 1;
+    }
+
+    40% {
+        transform: translate(0, 0) scale(0.9);
+    }
+
+    /* Toxunma */
+    50% {
+        transform: translate(0, 0) scale(0.9);
+    }
+
+    100% {
+        transform: translate(22px, 22px) scale(1);
+        opacity: 0;
+    }
 }
 
 @keyframes crystal-pulse {
-    0%, 35% { filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4)); stroke: rgba(0, 255, 255, 0.6); }
-    40% { filter: drop-shadow(0 0 20px #00ffff); stroke: #fff; transform: translateX(-50%) scale(1.05); }
-    50% { filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4)); stroke: rgba(0, 255, 255, 0.6); transform: translateX(-50%) scale(1); }
+
+    0%,
+    35% {
+        filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4));
+        stroke: rgba(0, 255, 255, 0.6);
+    }
+
+    40% {
+        filter: drop-shadow(0 0 20px #00ffff);
+        stroke: #fff;
+        transform: translateX(-50%) scale(1.05);
+    }
+
+    50% {
+        filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.4));
+        stroke: rgba(0, 255, 255, 0.6);
+        transform: translateX(-50%) scale(1);
+    }
 }
 
 @keyframes glow-flash {
-    0%, 38% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
-    40% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
-    50% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
+
+    0%,
+    38% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+
+    40% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1.5);
+    }
+
+    50% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(2);
+    }
 }
+
 /* --- SCROLL PERFORMANS OPTİMİZASYONU --- */
 
 /* 1. Başlıkların altındaki çizgiler için GPU Hızlandırma */
-.onepage-section h2::after, 
+.onepage-section h2::after,
 .onepage-section::after,
 .active-page::after {
     /* Bu satır tarayıcıya "bu değişecek, hazır ol" der */
@@ -1124,7 +1188,7 @@ body {
 }
 
 /* 2. Tüm içerik alanı için kaydırma iyileştirmesi */
-.content-wrapper, 
+.content-wrapper,
 #side-panel {
     /* Kaydırmayı daha akıcı yapar */
     -webkit-overflow-scrolling: touch;

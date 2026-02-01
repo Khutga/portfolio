@@ -135,7 +135,7 @@ export const About = {
 
         <div class="about-profile-card">
             <div class="profile-img-wrapper">
-                <img src="./assets/profile.jpg" alt="Ali Seyidzade" class="profile-img" draggable="false" ondragstart="return false;" onerror="this.src='./assets/cfd.png'">
+                <img src="./assets/profile.webp" alt="Ali Seyidzade" class="profile-img" draggable="false" ondragstart="return false;" onerror="this.src='./assets/cfd.webp'">
             </div>
             
             <div class="about-content">
