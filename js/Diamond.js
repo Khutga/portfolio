@@ -67,19 +67,20 @@ export class Diamond {
             if (child.isMesh && child.material) {
                 const orgTrans = child.material.transmission;
                 const orgColor = child.material.color.getHex();
-
-                child.material.transmission = 0.0;
-                child.material.color.setHex(0x000000);
-                child.material.needsUpdate = true;
+                
+                child.material.transmission = 0.0; 
+                child.material.color.setHex(0x000000); 
+                child.material.needsUpdate = true; 
 
                 setTimeout(() => {
                     child.material.transmission = orgTrans;
                     child.material.color.setHex(orgColor);
                     child.material.needsUpdate = true;
-                }, 50);
+                }, 50); 
             }
         });
     }
+
 
     addLabelToFace(mesh) {
         const nameMap = {

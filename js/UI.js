@@ -1,4 +1,5 @@
 import gsap from 'gsap';
+
 export class UI {
     constructor() {
         this.sidePanel = document.getElementById('side-panel');
@@ -11,11 +12,21 @@ export class UI {
 
         this.isManualScrolling = false;
 
+        this.sectionsCache = [];
+        this.lastActiveId = "";
+        this.isScrolling = false;
+
         this.init();
         this.createNavMenu();
     }
 
-   init() {
+    init() {
+
+        ['mousedown', 'touchstart', 'pointerdown'].forEach(evt => {
+            this.sidePanel.addEventListener(evt, (e) => {
+                e.stopPropagation();
+            }, { passive: false });
+        });
         if (this.closeBtn) {
             this.closeBtn.addEventListener('click', () => {
                 if (this.onClose) this.onClose();
@@ -41,43 +52,70 @@ export class UI {
         const handleSwipe = () => {
             const xDiff = touchEndX - touchStartX;
             const yDiff = Math.abs(touchEndY - touchStartY);
-
             if (xDiff > 60 && yDiff < 60) {
                 if (this.onClose) this.onClose();
             }
         };
 
+        this.sidePanel.addEventListener('wheel', (e) => {
+            const power = Math.abs(e.deltaY);
+
+            if (this.onScrollPower && power > 2) {
+                this.onScrollPower(power);
+            }
+        }, { passive: true });
+
+
         this.sidePanel.addEventListener('scroll', () => {
             if (this.isManualScrolling) return;
 
-            const sections = document.querySelectorAll('.onepage-section');
-            let currentSectionId = "";
-
-            const isAtBottom = Math.abs(this.sidePanel.scrollHeight - this.sidePanel.scrollTop - this.sidePanel.clientHeight) < 10;
-            if (!this.isManualScrolling) {
-                const currentScroll = this.sidePanel.scrollTop;
-                const delta = Math.abs(currentScroll - (this.lastScroll || 0));
-                this.lastScroll = currentScroll;
-
-                if (this.onScrollPower && delta > 0) {
-                    this.onScrollPower(delta);
-                }
-            }
-            if (isAtBottom) {
-                currentSectionId = "Face_Contact";
-            } else {
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (this.sidePanel.scrollTop >= (sectionTop - 150)) {
-                        currentSectionId = section.id;
-                    }
+            if (!this.isScrolling) {
+                this.isScrolling = true;
+                requestAnimationFrame(() => {
+                    this.handleMenuHighlight(); 
+                    this.isScrolling = false;
                 });
             }
-
-            if (currentSectionId) {
-                this.highlightItem(currentSectionId);
-            }
         });
+
+        window.addEventListener('resize', () => {
+            this.updateSectionCache();
+        });
+    }
+
+    updateSectionCache() {
+        const sections = document.querySelectorAll('.onepage-section');
+        this.sectionsCache = [];
+
+        sections.forEach(section => {
+            this.sectionsCache.push({
+                id: section.id,
+                top: section.offsetTop,
+                height: section.offsetHeight
+            });
+        });
+    }
+
+    handleMenuHighlight() {
+        const scrollPosition = this.sidePanel.scrollTop + 150;
+        let currentSectionId = "";
+
+        const isAtBottom = Math.abs(this.sidePanel.scrollHeight - this.sidePanel.scrollTop - this.sidePanel.clientHeight) < 10;
+
+        if (isAtBottom) {
+            currentSectionId = "Face_Contact";
+        } else {
+            for (let i = this.sectionsCache.length - 1; i >= 0; i--) {
+                if (scrollPosition >= this.sectionsCache[i].top) {
+                    currentSectionId = this.sectionsCache[i].id;
+                    break;
+                }
+            }
+        }
+
+        if (currentSectionId) {
+            this.highlightItem(currentSectionId);
+        }
     }
 
     setMenuCallback(callback) {
@@ -85,6 +123,11 @@ export class UI {
     }
 
     createNavMenu() {
+        const existingBtn = document.querySelector('.diamond-menu-btn');
+        if (existingBtn) existingBtn.remove();
+        const existingMenu = document.querySelector('.nav-menu');
+        if (existingMenu) existingMenu.remove();
+
         const menuBtn = document.createElement('div');
         menuBtn.className = 'diamond-menu-btn';
         menuBtn.innerHTML = '<div class="inner-diamond"></div>';
@@ -111,13 +154,12 @@ export class UI {
 
                 document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-page'));
                 btn.classList.add('active-page');
-                this.highlightItem(item.id);
+
                 if (window.innerWidth < 768) {
                     menuContainer.classList.remove('open');
                     const menuBtn = document.querySelector('.diamond-menu-btn');
                     if (menuBtn) menuBtn.classList.remove('menu-active');
                 }
-
             });
 
             menuContainer.appendChild(btn);
@@ -131,29 +173,32 @@ export class UI {
         });
     }
 
-
     initLightbox() {
         const lightbox = document.getElementById('image-lightbox');
+        if (!lightbox) return;
+
         const lightboxImg = lightbox.querySelector('img');
-        const projectImages = document.querySelectorAll('.project-img');
+        const wrapper = document.querySelector('.content-wrapper');
 
-        if (!lightbox || !lightboxImg) return;
+        if (wrapper) {
+            wrapper.addEventListener('click', (e) => {
+                if (e.target.classList.contains('project-img')) {
+                    e.stopPropagation();
+                    const src = e.target.getAttribute('src');
+                    if (lightboxImg) lightboxImg.src = src;
 
-        projectImages.forEach(img => {
-            img.onclick = (e) => {
-                e.stopPropagation();
-                const src = img.getAttribute('src');
-                lightboxImg.src = src;
+                    gsap.set(lightbox, { display: 'flex', opacity: 0 });
+                    gsap.to(lightbox, { opacity: 1, duration: 0.3 });
 
-                gsap.set(lightbox, { display: 'flex', opacity: 0 });
-
-                gsap.to(lightbox, { opacity: 1, duration: 0.3 });
-                gsap.fromTo(lightboxImg,
-                    { scale: 0.8, opacity: 0 },
-                    { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }
-                );
-            };
-        });
+                    if (lightboxImg) {
+                        gsap.fromTo(lightboxImg,
+                            { scale: 0.8, opacity: 0 },
+                            { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.5)" }
+                        );
+                    }
+                }
+            });
+        }
 
         const closeLightbox = () => {
             gsap.to(lightbox, {
@@ -161,16 +206,15 @@ export class UI {
                 duration: 0.3,
                 onComplete: () => {
                     lightbox.style.display = 'none';
-                    lightboxImg.src = "";
+                    if (lightboxImg) lightboxImg.src = "";
                 }
             });
         };
 
         lightbox.onclick = closeLightbox;
-
-        lightboxImg.onclick = (e) => {
-            e.stopPropagation();
-        };
+        if (lightboxImg) {
+            lightboxImg.onclick = (e) => e.stopPropagation();
+        }
     }
 
     openMenu() {
@@ -183,6 +227,9 @@ export class UI {
     }
 
     highlightItem(faceId) {
+        if (this.lastActiveId === faceId) return;
+        this.lastActiveId = faceId;
+
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-page'));
 
         const targetBtn = document.querySelector(`.nav-btn[data-id="${faceId}"]`);
@@ -193,11 +240,13 @@ export class UI {
 
     clearHighlights() {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-page'));
+        this.lastActiveId = "";
     }
-
 
     renderOnePageContent(contentMap) {
         const wrapper = document.querySelector('.content-wrapper');
+        if (!wrapper) return;
+
         wrapper.innerHTML = '';
 
         const order = ['Face_About', 'Face_Experience', 'Face_Projects', 'Face_Contact'];
@@ -209,13 +258,13 @@ export class UI {
             const section = document.createElement('section');
             section.id = key;
             section.classList.add('onepage-section');
-
             section.style.marginBottom = "150px";
             section.style.paddingTop = "20px";
-
             section.innerHTML = sectionData.body;
             wrapper.appendChild(section);
         });
+
+        setTimeout(() => this.updateSectionCache(), 300);
     }
 
     scrollToSection(id) {
@@ -226,9 +275,10 @@ export class UI {
 
             section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            clearTimeout(this.scrollTimeout);
+            if (this.scrollTimeout) clearTimeout(this.scrollTimeout);
             this.scrollTimeout = setTimeout(() => {
                 this.isManualScrolling = false;
+                this.highlightItem(id);
             }, 800);
         }
     }
@@ -237,12 +287,12 @@ export class UI {
         this.onClose = callback;
     }
 
-
     openPanel() {
-        if (this.sidePanel) this.sidePanel.classList.add('active');
+        if (this.sidePanel) {
+            this.sidePanel.classList.add('active');
+            setTimeout(() => this.updateSectionCache(), 300);
+        }
     }
-
-
 
     hidePanel() {
         if (this.sidePanel) this.sidePanel.classList.remove('active');

@@ -128,8 +128,8 @@ export class Effects {
 
             })
 
-            .to(diamond.diamondGroup.position, { x: 0, y: 0, z: 0, duration: 1.0, ease: "power3.inOut" })
-            .to(diamond.diamondGroup.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 1.0, ease: "power3.inOut" }, "<")
+            .to(diamond.diamondGroup.position, { x: 0, y: 0, z: 0, duration: 0.5, ease: "power3.inOut" })
+            .to(diamond.diamondGroup.scale, { x: 0.5, y: 0.5, z: 0.5, duration: 0.5, ease: "power3.inOut" }, "<")
             .to(diamond.energyRing.material, {
                 opacity: 0.3,
                 duration: 0.5,
@@ -167,5 +167,24 @@ export class Effects {
                 overwrite: true
             });
         }
+    }
+
+    static warmUp(scene) {
+        const start = new THREE.Vector3(0, -9000, 0);
+        const end = new THREE.Vector3(0, -9001, 0);
+        
+        const laserData = this.createRealLaser(start, end, scene);
+        
+        if (laserData.mat) laserData.mat.opacity = 0.01;
+        if (laserData.coreMat) laserData.coreMat.opacity = 0.01;
+
+        setTimeout(() => {
+            if (scene && laserData.mesh) {
+                scene.remove(laserData.mesh);
+                if (laserData.mat) laserData.mat.dispose();
+                if (laserData.coreMat) laserData.coreMat.dispose();
+                if (laserData.mesh.geometry) laserData.mesh.geometry.dispose();
+            }
+        }, 100);
     }
 }

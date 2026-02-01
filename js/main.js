@@ -26,7 +26,7 @@ class DiamondPortfolio {
 
         this.init();
 
-        /*Iron Dome*/
+        /*            */
         window.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         }, false);
@@ -38,28 +38,26 @@ class DiamondPortfolio {
             }
         });
 
-        /*     window.addEventListener('keydown', (e) => {
-                if (
-                    e.key === 'F12' ||
-                    (e.ctrlKey && e.shiftKey && e.key === 'I') ||
-                    (e.ctrlKey && e.shiftKey && e.key === 'J') ||
-                    (e.ctrlKey && e.shiftKey && e.key === 'C') ||
-                    (e.ctrlKey && e.key === 's') ||
-                    (e.ctrlKey && e.key === 'u')
-                ) {
-                    e.preventDefault();
-                    return false;
-                }
-            });
-            setInterval(() => {
-                const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
-                console.log('%c Diamond ', stil);
-            }, 2000);
-     */
+        window.addEventListener('keydown', (e) => {
+            if (
+                e.key === 'F12' ||
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+                (e.ctrlKey && e.key === 's') ||
+                (e.ctrlKey && e.key === 'u')
+            ) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        setInterval(() => {
+            const stil = 'background: #000; color: #00ffff; font-size: 20px; padding: 10px; border: 2px solid #00ffff; font-family: monospace;';
+            console.log('%c Diamond ', stil);
+        }, 2000);
 
 
-
-        /*Iron Dome*/
+        /*            */
     }
 
     init() {
@@ -111,14 +109,32 @@ class DiamondPortfolio {
         };
 
         manager.onLoad = () => {
-            if (this.diamond) {
+            if (this.diamond && this.diamond.warmUp) {
                 this.diamond.warmUp();
             }
+
+            if (Effects.warmUp) {
+                Effects.warmUp(this.sceneManager.scene);
+            }
+
+            if (this.diamond && this.raycaster) {
+                this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.sceneManager.camera);
+                this.raycaster.intersectObjects(this.diamond.getChildren());
+            }
+
+            gsap.to(this.diamond, {
+                rotationSpeed: 0.15,
+                duration: 0.1,
+                overwrite: true,
+                onComplete: () => {
+                    this.diamond.rotationSpeed = 0.01;
+                }
+            });
 
             gsap.to(preloader, {
                 opacity: 0,
                 duration: 1,
-                delay: 0.5, 
+                delay: 0.5,
                 ease: "power2.inOut",
                 onComplete: () => {
                     preloader.style.display = 'none';
@@ -162,6 +178,15 @@ class DiamondPortfolio {
     }
 
     onMouseMove(event) {
+        if (event.target.closest('#side-panel') || event.target.closest('.nav-menu')) {
+            document.body.style.cursor = 'default';
+
+            if (this.hoveredObject) {
+                Effects.hoverEffect(this.hoveredObject, false);
+                this.hoveredObject = null;
+            }
+            return;
+        }
         if (this.isSplitView) {
             document.body.style.cursor = 'default';
             if (this.hoveredObject) {
@@ -175,7 +200,7 @@ class DiamondPortfolio {
         this.mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
-        
+
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
 
         let hit = intersects.find(i => this.contentMap && this.contentMap[i.object.name]);
@@ -188,7 +213,7 @@ class DiamondPortfolio {
 
             if (this.hoveredObject !== hit.object) {
                 if (this.hoveredObject) Effects.hoverEffect(this.hoveredObject, false);
-                
+
                 this.hoveredObject = hit.object;
                 Effects.hoverEffect(this.hoveredObject, true);
             }
@@ -252,6 +277,9 @@ class DiamondPortfolio {
 
 
     handleDiamondClick(object, hitPoint) {
+        if (this.sceneManager.controls) {
+            this.sceneManager.controls.enabled = false;
+        }
         const hintElement = document.getElementById('interaction-hint');
         if (hintElement) {
             hintElement.style.opacity = '0';
@@ -299,6 +327,9 @@ class DiamondPortfolio {
 
     resetView() {
         if (!this.isSplitView) return;
+        if (this.sceneManager.controls) {
+            this.sceneManager.controls.enabled = true;
+        }
         this.isSplitView = false;
 
         this.ui.clearHighlights();
@@ -324,12 +355,20 @@ class DiamondPortfolio {
     }
 
     animate() {
-        const deltaTime = this.clock.getDelta();
-        this.background.update(deltaTime);
-        this.diamond.rotate();
-        this.sceneManager.render();
         requestAnimationFrame(() => this.animate());
 
+        const deltaTime = this.clock.getDelta();
+
+        if (this.isSplitView) {
+            if (this.diamond) this.diamond.rotate();
+
+            this.sceneManager.render();
+            return;
+        }
+
+        if (this.background) this.background.update(deltaTime);
+        if (this.diamond) this.diamond.rotate();
+        this.sceneManager.render();
     }
 
 
