@@ -95,7 +95,7 @@ body {
 
     0%,
     100% {
-        top: 35px;
+        transform: translateY(0);
     }
 
     50% {
