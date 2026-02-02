@@ -67,19 +67,23 @@ export class UI {
 
 
         this.sidePanel.addEventListener('scroll', () => {
+            const menuBtn = document.querySelector('.diamond-menu-btn');
+
+            if (this.sidePanel.scrollTop > 50) {
+                if (menuBtn) menuBtn.classList.add('faded');
+            } else {
+                if (menuBtn) menuBtn.classList.remove('faded');
+            }
+
             if (this.isManualScrolling) return;
 
             if (!this.isScrolling) {
                 this.isScrolling = true;
                 requestAnimationFrame(() => {
-                    this.handleMenuHighlight(); 
+                    this.handleMenuHighlight();
                     this.isScrolling = false;
                 });
             }
-        });
-
-        window.addEventListener('resize', () => {
-            this.updateSectionCache();
         });
     }
 

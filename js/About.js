@@ -68,9 +68,10 @@ export const About = {
             align-items: center;
             justify-content: center;
             padding: 10px 5px; 
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(0, 255, 255, 0.01);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 12px;
+            backdrop-filter: blur(5px);
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             cursor: default;
             height: 100%;
@@ -92,7 +93,7 @@ export const About = {
             height: 38px;
             margin-bottom: 8px;
             object-fit: contain;
-            filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5)); 
+            filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.2)); 
             transition: all 0.3s ease;
         }
         
@@ -115,7 +116,7 @@ export const About = {
             text-align: center;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .about-profile-card {
                 flex-direction: column;
                 align-items: center;

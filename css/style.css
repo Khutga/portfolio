@@ -1202,3 +1202,32 @@ body {
     filter: none !important;
     box-shadow: none !important;
 }
+
+
+/* Elmas Buton Opaklık Geçişi */
+.diamond-menu-btn {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                filter 0.4s ease,
+                background-color 0.4s ease,
+                opacity 0.5s ease; /* Opaklık geçişi eklendi */
+}
+
+/* Panel açıkken butonu yarı saydam yapan sınıf */
+.diamond-menu-btn.faded {
+    opacity: 0.15;
+     /* Okuma sırasında yanlışlıkla tıklanmasını engeller */
+}
+
+/* Mobil Skill Kartlarının Üst Üste Binmesini Önleme */
+@media (max-width: 768px) {
+    .tech-stack-grid {
+        grid-template-columns: repeat(2, 1fr) !important; /* Kartları 2 sütun yaparak ferahlatır */
+        gap: 15px !important;
+    }
+    
+    .tech-item {
+        height: auto !important;
+        padding: 15px 10px !important;
+    }
+}
+
