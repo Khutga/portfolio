@@ -182,15 +182,38 @@ export class UI {
         if (!lightbox) return;
 
         const lightboxImg = lightbox.querySelector('img');
+        const prevBtn = lightbox.querySelector('.lightbox-prev');
+        const nextBtn = lightbox.querySelector('.lightbox-next');
+        const counter = lightbox.querySelector('.lightbox-counter');
         const wrapper = document.querySelector('.content-wrapper');
+
+        let galleryImages = [];
+        let currentIndex = 0;
+
+        const showImage = (index) => {
+            currentIndex = index;
+            if (lightboxImg) lightboxImg.src = galleryImages[index];
+            if (counter) counter.textContent = `${index + 1} / ${galleryImages.length}`;
+            if (prevBtn) prevBtn.style.display = galleryImages.length > 1 ? 'flex' : 'none';
+            if (nextBtn) nextBtn.style.display = galleryImages.length > 1 ? 'flex' : 'none';
+            if (counter) counter.style.display = galleryImages.length > 1 ? 'block' : 'none';
+        };
 
         if (wrapper) {
             wrapper.addEventListener('click', (e) => {
                 if (e.target.classList.contains('project-img')) {
                     e.stopPropagation();
-                    const src = e.target.getAttribute('src');
-                    if (lightboxImg) lightboxImg.src = src;
 
+                    const parent = e.target.closest('.project-gallery') || e.target.closest('.project-image-wrapper');
+                    if (parent) {
+                        galleryImages = Array.from(parent.querySelectorAll('.project-img')).map(img => img.getAttribute('src'));
+                        currentIndex = galleryImages.indexOf(e.target.getAttribute('src'));
+                    } else {
+                        galleryImages = [e.target.getAttribute('src')];
+                        currentIndex = 0;
+                    }
+
+                    showImage(currentIndex);
                     gsap.set(lightbox, { display: 'flex', opacity: 0 });
                     gsap.to(lightbox, { opacity: 1, duration: 0.3 });
 
@@ -219,6 +242,28 @@ export class UI {
         if (lightboxImg) {
             lightboxImg.onclick = (e) => e.stopPropagation();
         }
+        if (prevBtn) {
+            prevBtn.onclick = (e) => {
+                e.stopPropagation();
+                showImage((currentIndex - 1 + galleryImages.length) % galleryImages.length);
+                gsap.fromTo(lightboxImg, { opacity: 0.5 }, { opacity: 1, duration: 0.2 });
+            };
+        }
+        if (nextBtn) {
+            nextBtn.onclick = (e) => {
+                e.stopPropagation();
+                showImage((currentIndex + 1) % galleryImages.length);
+                gsap.fromTo(lightboxImg, { opacity: 0.5 }, { opacity: 1, duration: 0.2 });
+            };
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') prevBtn?.click();
+                if (e.key === 'ArrowRight') nextBtn?.click();
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
     }
 
     openMenu() {
