@@ -135,8 +135,6 @@ export class Background {
         const s = JET_TARGET_SIZE;
         // Wingtips + engine: offsets in jet-local space
         const emitters = [
-            new THREE.Vector3(-s * 0.38, 0.05, -s * 0.1),
-            new THREE.Vector3(s * 0.38, 0.05, -s * 0.1),
             new THREE.Vector3(0, 0.1, -s * 0.55)
         ];
 
