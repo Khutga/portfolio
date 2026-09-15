@@ -20,6 +20,14 @@ export class UI {
 
     init() {
 
+        // Hide broken images gracefully (e.g. asset missing on server -> no broken-icon UI)
+        document.addEventListener('error', (e) => {
+            const t = e.target;
+            if (t && t.tagName === 'IMG' && t.classList.contains('tech-icon')) {
+                t.style.display = 'none';
+            }
+        }, true);
+
         ['mousedown', 'touchstart', 'pointerdown'].forEach(evt => {
             this.sidePanel.addEventListener(evt, (e) => {
                 e.stopPropagation();

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const TRAIL_LENGTH = 90;
 const JET_TARGET_SIZE = 11; // bigger background aircraft
@@ -50,6 +51,11 @@ export class Background {
         if (this.isMobile) return; // keep the background lean on phones
 
         const loader = new GLTFLoader(this.loadingManager);
+
+        // jetoptimized.glb is Draco-compressed — wire up the WASM decoder
+        const draco = new DRACOLoader(this.loadingManager);
+        draco.setDecoderPath('https://unpkg.com/three@0.172.0/examples/jsm/libs/draco/');
+        loader.setDRACOLoader(draco);
 
         loader.load('./assets/jetoptimized.glb', (gltf) => {
             const model = gltf.scene;

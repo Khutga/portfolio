@@ -152,12 +152,27 @@ export class Effects {
     static hoverEffect(object, isHovering) {
         if (!object || !object.material) return;
 
-        // Emissive-only hover: toggling transmission recompiles shaders (expensive).
-        gsap.to(object.material, {
-            emissiveIntensity: isHovering ? 2.5 : 0,
-            duration: isHovering ? 0.15 : 0.4,
-            overwrite: true
-        });
+        if (isHovering) {
+
+            gsap.to(object.material, {
+                emissiveIntensity: 4.0,
+                transmission: 0.0,
+                opacity: 1.0,
+                roughness: 0.2,
+                duration: 0.05,
+                overwrite: true
+            });
+        }
+        else {
+            gsap.to(object.material, {
+                emissiveIntensity: 0,
+                transmission: 1.0,
+                opacity: 1.0,
+                roughness: 0.02,
+                duration: 0.5,
+                overwrite: true
+            });
+        }
     }
 
     static warmUp(scene) {

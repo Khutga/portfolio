@@ -7,7 +7,7 @@ export class Diamond {
         this.scene = scene;
         this.diamondGroup = new THREE.Group();
         this.loader = new GLTFLoader(loadingManager);
-        this.rotationSpeed = 0.01;
+        this.rotationSpeed = 0.002;
         this.energyRing = null;
         this.cachedMeshes = [];
         this.init();
@@ -33,7 +33,7 @@ export class Diamond {
                         transmission: 1.0,
                         thickness: 2.5,
                         ior: 2.417,
-                        emissive: 0x00ffff,
+                        emissive: 0x000000,
                         emissiveIntensity: 0,
                         attenuationColor: 0x7afbf4,
                         attenuationDistance: 0.5,
@@ -101,6 +101,7 @@ export class Diamond {
         ctx.font = `900 ${fontSize}px 'Inter', 'Segoe UI', sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+        ctx.letterSpacing = "8px";
 
         ctx.shadowColor = "rgba(0, 0, 0, 1)";
         ctx.shadowBlur = 20;
@@ -119,7 +120,9 @@ export class Diamond {
         ctx.fillText(labelText, canvas.width / 2, canvas.height / 2);
 
         const texture = new THREE.CanvasTexture(canvas);
-        texture.anisotropy = 4;
+        texture.magFilter = THREE.LinearFilter;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.anisotropy = 16;
         texture.needsUpdate = true;
 
         const spriteMaterial = new THREE.SpriteMaterial({
@@ -248,7 +251,7 @@ export class Diamond {
             overwrite: true,
             onComplete: () => {
                 gsap.to(this, {
-                    rotationSpeed: 0.01,
+                    rotationSpeed: 0.002,
                     duration: 1.5,
                     ease: "power1.out",
                     overwrite: true
