@@ -1,7 +1,6 @@
-/* Tüm resimler için koruma kalkanı */
+/* Image protection */
 img {
     -webkit-user-drag: none;
-    user-drag: none;
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -47,17 +46,13 @@ body {
     transform: translateX(0);
 }
 
-/* Panel başlık stili: Neon gradyan efekti uygulanmıştır */
+/* Panel title: neon gradient */
 #side-title {
     font-size: 2.5rem;
     font-weight: 300;
     margin: 0;
     background: linear-gradient(90deg, #fff, #00ffff);
-    background-clip: text;
-    background-clip: text;
     -webkit-background-clip: text;
-    background-clip: text;
-    background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 2px;
@@ -104,7 +99,7 @@ body {
 
 }
 
-/* Sol üstteki Vektörel & Wireframe Elmas Buton */
+/* Diamond menu button */
 .diamond-menu-btn {
     position: fixed;
     left: 35px;
@@ -118,7 +113,8 @@ body {
     animation: diamond-float 3s ease-in-out infinite;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
         filter 0.4s ease,
-        background-color 0.4s ease;
+        background-color 0.4s ease,
+        opacity 0.5s ease;
 
     display: flex;
     align-items: center;
@@ -152,13 +148,6 @@ body {
 
 .diamond-menu-btn:hover::after {
     background-color: rgba(0, 255, 255, 0.15);
-}
-
-.diamond-menu-btn:hover::before {
-    opacity: 0.8;
-    background:
-        linear-gradient(to right, transparent 48%, #fff 50%, transparent 52%),
-        linear-gradient(to bottom, transparent 34%, #fff 35%, transparent 36%);
 }
 
 /* Navigasyon menüsünün dikey hizalaması ve gizlilik ayarları */
@@ -210,15 +199,10 @@ body {
     background: linear-gradient(90deg, rgba(0, 255, 255, 0.1), transparent);
 }
 
-/* Menü butonu aktifleştiğinde (açıldığında) şekil değiştirmesi */
 .diamond-menu-btn.menu-active {
     transform: rotate(180deg);
     border-color: #fff;
     box-shadow: 0 0 20px #fff;
-}
-
-.diamond-menu-btn.menu-active .inner-diamond {
-    background: #fff;
 }
 
 /* O an hangi sayfadaysak menüde o butonun vurgulu kalmasını sağlayan sınıf */
@@ -256,7 +240,8 @@ body {
 }
 
 #side-panel::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #00ffff, #409cff);
+    background: #00ffff;
+    box-shadow: 0 0 15px #00ffff;
     border-radius: 10px;
 }
 
@@ -268,17 +253,12 @@ body {
 
 
 
-/* Panel içindeki içeriklerin yerleşimi ve giriş animasyonu */
+/* Panel content layout + entrance animation */
 .content-wrapper {
     padding: 80px 40px;
     opacity: 0;
     transform: translateX(50px);
     transition: all 0.6s ease 0.3s;
-}
-
-#side-panel.active .content-wrapper {
-    opacity: 1;
-    transform: translateX(0);
 }
 
 .main-title {
@@ -317,21 +297,12 @@ body {
     border-radius: 15px;
 }
 
-/* Izgara yapısı: Yetenek kartları veya proje kartlarını yan yana dizer */
+/* Grid: skill / project cards side by side */
 .matrix-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     margin-bottom: 50px;
-}
-
-/* Siberpunk tarzı her bir bilgi kartı (Matrix Item) */
-.matrix-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(0, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 25px;
-    transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
 @media (max-width: 768px) {
@@ -342,11 +313,6 @@ body {
         box-sizing: border-box;
         padding: 0;
         overflow-x: hidden;
-
-    }
-
-    .details-grid {
-        grid-template-columns: 1fr;
     }
 
     .main-title {
@@ -354,7 +320,7 @@ body {
     }
 }
 
-/* Başlık alanı: İsim ve Glitch efekti için kapsayıcı */
+/* Title area */
 .hero-name {
 
     font-size: 4em;
@@ -363,10 +329,7 @@ body {
     letter-spacing: -3px;
     text-transform: uppercase;
     margin: 0 0 10px 0;
-
-
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: #00ffffb2;
+    color: rgba(0, 255, 255, 0.7);
 
     filter:
         drop-shadow(0 0 30px rgba(0, 255, 255, 0.15)) drop-shadow(0 0 5px rgba(0, 255, 255, 0.3));
@@ -610,12 +573,6 @@ body {
     }
 }
 
-/* Yan panel içindeki özel kaydırma çubuğu (scrollbar) tasarımı */
-#side-panel::-webkit-scrollbar-thumb {
-    background: #00ffff;
-    box-shadow: 0 0 15px #00ffff;
-}
-
 .contact-link {
     text-decoration: none;
     color: inherit;
@@ -638,29 +595,6 @@ body {
 
 .hero-name.contact-fix {
     font-size: 4em;
-}
-
-.project-image-container {
-    width: 100%;
-    height: 180px;
-    overflow: hidden;
-    border-radius: 4px;
-    margin: 15px 0;
-    border: 1px solid rgba(0, 255, 255, 0.2);
-    position: relative;
-}
-
-.project-preview {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.5s ease;
-    filter: brightness(0.8) contrast(1.1);
-}
-
-.matrix-item:hover .project-preview {
-    transform: scale(1.1);
-    filter: brightness(1);
 }
 
 .project-card {
@@ -780,7 +714,7 @@ body {
 }
 
 .image-modal::after {
-    content: 'Kapatmak için dokunun';
+    content: 'Tap to close';
     position: absolute;
     bottom: 30px;
     color: rgba(0, 255, 255, 0.8);
@@ -841,7 +775,6 @@ body {
     align-items: center;
     z-index: 20000;
     opacity: 1;
-    pointer-events: none;
 }
 
 .loader-content {
@@ -911,72 +844,45 @@ body {
     }
 }
 
-/*Ekran küçükse*/
-
-
-/* --- MOBİL DÜZELTMELERİ --- */
-
+/* --- Mobile --- */
 @media (max-width: 768px) {
-
     .nav-btn {
-        background: transparent;
-        border: none;
-        color: rgba(255, 255, 255, 0.7);
-        background: transparent;
-        font-family: 'Segoe UI', sans-serif;
-        font-size: 1rem;
-        font-weight: 500;
-        cursor: pointer;
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        text-align: left;
-        padding: 10px;
-        border-left: 2px solid transparent;
-        transition: 0.3s;
         text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-        position: relative;
     }
 
     .pill-row,
     .tag-cloud {
         display: flex !important;
         flex-wrap: wrap !important;
-        /* Sığmayan kutu komple aşağı düşsün */
-        gap: 8px !important;
+        gap: 10px !important;
         justify-content: flex-start !important;
     }
 
-    /* 2. Etiketlerin Kendisini Koruma Altına Al */
-    /* .tag-cloud .pill diyerek önceliği artırıyoruz ki diğer kodlar ezemesin */
     .pill,
     .tag-cloud .pill,
     .pill-row .pill {
         white-space: nowrap !important;
-        /* ASLA satır başı yapma */
         display: inline-block !important;
-        /* Blok gibi davran, yazı gibi bölünme */
-        font-size: 0.80rem !important;
-        /* Yazıyı biraz daha küçültüp sığmasını sağla */
-        padding: 6px 10px !important;
+        font-size: 0.85rem !important;
+        padding: 8px 14px !important;
+        margin: 4px 2px;
         width: auto !important;
-        /* Genişlik içeriğe göre olsun */
         flex-shrink: 0 !important;
-        /* Sıkışıp büzülme */
         line-height: 1.2 !important;
     }
 
-    /* 3. Kartların İçindeki Taşmayı Önle */
     .matrix-item {
         overflow: hidden !important;
-        /* Eğer yine de taşarsa kartın dışına çıkmasın */
         padding: 15px !important;
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 !important;
     }
 
-    body,
-    html {
+    html,
+    body {
         overflow-x: hidden;
-        position: fixed;
-        /* iOS safari bounce efektini engellemek için gerekebilir */
+        overflow-y: hidden;
         width: 100%;
         height: 100%;
     }
@@ -991,109 +897,44 @@ body {
     .content-wrapper {
         width: 100%;
         box-sizing: border-box;
-        /* Çok önemli */
         padding: 80px 20px 40px 20px !important;
-        /* Üst, Sağ, Alt, Sol boşluklar */
         overflow-x: hidden;
     }
 
-    .pill {
-        white-space: nowrap !important;
-        /* KRİTİK KOD: Metin asla bölünmesin (UI/UX Optimization tek satır kalır) */
-        font-size: 0.85rem !important;
-        /* Yazıyı okunur hale getir */
-        padding: 8px 12px !important;
-        /* İç boşluğu dengele */
-        display: inline-block;
-        /* Hizalamayı düzelt */
-        flex-shrink: 0;
-        /* Kutunun sıkışıp küçülmesini engelle */
-    }
-
-    /* 2. KUTUCUKLARIN DİZİLDİĞİ SATIRI DÜZENLE */
-    .pill-row {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        /* Sığmayan kutu BÜTÜN HALDE aşağı insin */
-        gap: 10px !important;
-        /* Kutular birbirine yapışmasın */
-        justify-content: flex-start;
-        /* Sola hizalı olsun */
-    }
-
-    /* 1. Izgara yapısını tek sütuna düşür ve taşmayı önle */
     .matrix-grid {
         display: flex !important;
-        /* Grid yerine Flex column daha stabil olabilir mobilde */
         flex-direction: column;
         gap: 20px;
         width: 100%;
         box-sizing: border-box;
     }
 
-    /* 2. Kartların iç boşluğunu azalt (Daha fazla alan kalsın) */
-    .matrix-item {
-        width: 100%;
-        box-sizing: border-box;
-        /* Kutuların taşmasını engeller */
-        margin: 0 !important;
-    }
-
-    /* 3. Yazı boyutlarını okunabilir hale getir */
     .matrix-body {
         font-size: 1.15rem !important;
-        /* Yazı boyutunu artırdık */
         line-height: 1.5;
     }
 
     .matrix-head {
         font-size: 1.1rem !important;
-        /* Başlıkları belirginleştir */
         margin-bottom: 15px;
     }
 
-    /* 4. Etiketleri (Pill) büyüt ve aralarını aç */
-    .pill {
-        font-size: 0.85rem !important;
-        /* Çok küçüktü, büyüttük */
-        padding: 8px 14px !important;
-        /* Dokunması kolay olsun */
-        margin: 4px 2px;
-    }
-
-    .tag-cloud {
-        gap: 8px;
-        /* Etiketler birbirine yapışmasın */
-    }
-
-    /* 5. About (Hakkımda) kısmındaki profil kartını düzelt */
     .about-profile-card {
         padding: 20px !important;
         flex-direction: column !important;
-        /* Resmi ve yazıyı alt alta al */
     }
 
     .profile-img-wrapper {
         width: 120px !important;
-        /* Resmi mobilde biraz küçült */
         height: 120px !important;
         margin-bottom: 20px;
     }
 
     .about-text {
         font-size: 1.1rem !important;
-        /* Hakkımda yazısını büyüt */
         text-align: left;
-        /* Mobilde ortalı yazı zor okunur, sola yasla */
     }
 
-    body {
-        position: relative;
-        overflow: hidden;
-        /* Three.js canvas için */
-    }
-
-    /* 6. Proje resimlerinin oranını koru */
     .project-image-wrapper {
         height: auto !important;
         min-height: 200px;
@@ -1254,48 +1095,22 @@ body {
     }
 }
 
-/* --- SCROLL PERFORMANS OPTİMİZASYONU --- */
-
-/* 1. Başlıkların altındaki çizgiler için GPU Hızlandırma */
+/* --- Scroll GPU acceleration --- */
 .onepage-section h2::after,
-.onepage-section::after,
-.active-page::after {
-    /* Bu satır tarayıcıya "bu değişecek, hazır ol" der */
+.onepage-section::after {
     will-change: transform;
-    /* Bu satır elementi 3D uzaya alır ve Ekran Kartına (GPU) yükler */
     transform: translateZ(0);
     backface-visibility: hidden;
 }
 
-/* 2. Tüm içerik alanı için kaydırma iyileştirmesi */
 .content-wrapper,
 #side-panel {
-    /* Kaydırmayı daha akıcı yapar */
     -webkit-overflow-scrolling: touch;
-    /* Gereksiz boyamaları engeller */
-    contain: content;
 }
 
-/* 3. Eğer bulanıklık (blur) efekti varsa scroll sırasında kapat */
-/* (İsteğe bağlı: Eğer blur çoksa bunu kullan) */
-.is-scrolling .onepage-section {
-    filter: none !important;
-    box-shadow: none !important;
-}
-
-
-/* Elmas Buton Opaklık Geçişi */
-.diamond-menu-btn {
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
-                filter 0.4s ease,
-                background-color 0.4s ease,
-                opacity 0.5s ease; /* Opaklık geçişi eklendi */
-}
-
-/* Panel açıkken butonu yarı saydam yapan sınıf */
+/* Dim the diamond button while reading */
 .diamond-menu-btn.faded {
     opacity: 0.15;
-     /* Okuma sırasında yanlışlıkla tıklanmasını engeller */
 }
 
 /* Mobil Skill Kartlarının Üst Üste Binmesini Önleme */

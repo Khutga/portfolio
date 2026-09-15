@@ -3,8 +3,6 @@ import gsap from 'gsap';
 export class UI {
     constructor() {
         this.sidePanel = document.getElementById('side-panel');
-        this.titleEl = document.getElementById('side-title');
-        this.descEl = document.getElementById('side-desc');
         this.closeBtn = document.getElementById('close-side-btn');
 
         this.onClose = null;
@@ -134,7 +132,6 @@ export class UI {
 
         const menuBtn = document.createElement('div');
         menuBtn.className = 'diamond-menu-btn';
-        menuBtn.innerHTML = '<div class="inner-diamond"></div>';
         document.body.appendChild(menuBtn);
 
         const menuContainer = document.createElement('div');
@@ -179,7 +176,8 @@ export class UI {
 
     initLightbox() {
         const lightbox = document.getElementById('image-lightbox');
-        if (!lightbox) return;
+        if (!lightbox || lightbox.dataset.bound === '1') return;
+        lightbox.dataset.bound = '1';
 
         const lightboxImg = lightbox.querySelector('img');
         const prevBtn = lightbox.querySelector('.lightbox-prev');

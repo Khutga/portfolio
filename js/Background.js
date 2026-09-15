@@ -1,8 +1,14 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+const TRAIL_LENGTH = 90;
+const JET_TARGET_SIZE = 11; // bigger background aircraft
+const JET_LOOP_DURATION = 42;
 
 export class Background {
-    constructor(scene) {
+    constructor(scene, loadingManager) {
         this.scene = scene;
+        this.loadingManager = loadingManager;
         this.backgroundSphere = null;
         this.stars = null;
         this.dustClouds = null;
@@ -10,6 +16,24 @@ export class Background {
         this.starTime = 0;
         this.mouseX = 0;
         this.mouseY = 0;
+        this.isMobile = window.innerWidth < 768;
+
+        this.jet = null;
+        this.jetCurve = null;
+        this.jetProgress = Math.random();
+        this.jetBank = 0;
+        this.jetNoseOffset = 0;
+        this.jetTrails = [];
+        this.engineGlow = null;
+        this.engineFlicker = 0;
+
+        // Reusable temps (avoid per-frame allocation)
+        this._tmpPos = new THREE.Vector3();
+        this._tmpTan = new THREE.Vector3();
+        this._tmpLook = new THREE.Vector3();
+        this._tmpEmit = new THREE.Vector3();
+        this._prevTangent = new THREE.Vector3(1, 0, 0);
+
         this.init();
     }
 
@@ -19,15 +43,169 @@ export class Background {
         this.createDustClouds();
         this.createTwinklingStars();
         this.createLights();
+        this.createJet();
+    }
+
+    createJet() {
+        if (this.isMobile) return; // keep the background lean on phones
+
+        const loader = new GLTFLoader(this.loadingManager);
+
+        loader.load('./assets/jetoptimized.glb', (gltf) => {
+            const model = gltf.scene;
+
+            // Normalize scale so the jet reads clearly at background distance.
+            const box = new THREE.Box3().setFromObject(model);
+            const size = new THREE.Vector3();
+            box.getSize(size);
+            const maxDim = Math.max(size.x, size.y, size.z) || 1;
+            const scale = JET_TARGET_SIZE / maxDim;
+
+            const center = new THREE.Vector3();
+            box.getCenter(center);
+            model.position.sub(center);
+            model.scale.setScalar(scale);
+
+            // Much darker stealth finish: kill bright paint, keep silhouette.
+            model.traverse((child) => {
+                if (child.isMesh) {
+                    child.castShadow = false;
+                    child.receiveShadow = false;
+                    const mat = child.material;
+                    if (mat) {
+                        if ('color' in mat && mat.color) mat.color.multiplyScalar(0.16);
+                        if ('emissive' in mat && mat.emissive) mat.emissive.setRGB(0, 0, 0);
+                        if ('metalness' in mat) mat.metalness = 0.85;
+                        if ('roughness' in mat) mat.roughness = 0.55;
+                        if ('envMapIntensity' in mat) mat.envMapIntensity = 0.25;
+                        mat.toneMapped = true;
+                    }
+                }
+            });
+
+            this.jet = new THREE.Group();
+            this.jet.add(model);
+            this.jet.frustumCulled = false;
+
+            this.createEngineGlow();
+            this.createJetTrails();
+
+            this.jetCurve = this.createJetPath();
+            const startPoint = this.jetCurve.getPointAt(this.jetProgress);
+            this.jet.position.copy(startPoint);
+
+            this.scene.add(this.jet);
+        });
+    }
+
+    createEngineGlow() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+        grad.addColorStop(0, 'rgba(160,240,255,1)');
+        grad.addColorStop(0.25, 'rgba(0,200,255,0.8)');
+        grad.addColorStop(1, 'rgba(0,80,255,0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 64, 64);
+
+        const mat = new THREE.SpriteMaterial({
+            map: new THREE.CanvasTexture(canvas),
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.85,
+            depthWrite: false
+        });
+        this.engineGlow = new THREE.Sprite(mat);
+        const s = JET_TARGET_SIZE * 0.28;
+        this.engineGlow.scale.set(s, s, 1);
+        // Rear of the craft (jet faces +Z after lookAt)
+        this.engineGlow.position.set(0, 0.1, -JET_TARGET_SIZE * 0.55);
+        this.jet.add(this.engineGlow);
+    }
+
+    createJetTrails() {
+        const s = JET_TARGET_SIZE;
+        // Wingtips + engine: offsets in jet-local space
+        const emitters = [
+            new THREE.Vector3(-s * 0.38, 0.05, -s * 0.1),
+            new THREE.Vector3(s * 0.38, 0.05, -s * 0.1),
+            new THREE.Vector3(0, 0.1, -s * 0.55)
+        ];
+
+        this.jetTrails = emitters.map((offset) => {
+            const positions = new Float32Array(TRAIL_LENGTH * 3);
+            const colors = new Float32Array(TRAIL_LENGTH * 3);
+            const geo = new THREE.BufferGeometry();
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            const mat = new THREE.LineBasicMaterial({
+                vertexColors: true,
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.6,
+                depthWrite: false
+            });
+            const line = new THREE.Line(geo, mat);
+            line.frustumCulled = false;
+            this.scene.add(line);
+            return { offset, line, positions, colors, seeded: false };
+        });
+    }
+
+    pushTrail(trail, worldPos) {
+        const { positions, colors } = trail;
+        // Shift history back, append new point at the end (head)
+        positions.copyWithin(0, 3);
+        colors.copyWithin(0, 3);
+        const h = (TRAIL_LENGTH - 1) * 3;
+        positions[h] = worldPos.x;
+        positions[h + 1] = worldPos.y;
+        positions[h + 2] = worldPos.z;
+        // Rebuild fade: tail (black/invisible) -> head (bright cyan)
+        for (let i = 0; i < TRAIL_LENGTH; i++) {
+            const t = i / (TRAIL_LENGTH - 1);
+            const b = t * t;
+            colors[i * 3] = 0.25 * b;
+            colors[i * 3 + 1] = 0.85 * b;
+            colors[i * 3 + 2] = 1.0 * b;
+        }
+        trail.line.geometry.attributes.position.needsUpdate = true;
+        trail.line.geometry.attributes.color.needsUpdate = true;
+    }
+
+    seedTrail(trail, worldPos) {
+        for (let i = 0; i < TRAIL_LENGTH; i++) {
+            trail.positions[i * 3] = worldPos.x;
+            trail.positions[i * 3 + 1] = worldPos.y;
+            trail.positions[i * 3 + 2] = worldPos.z;
+        }
+        trail.line.geometry.attributes.position.needsUpdate = true;
+        trail.seeded = true;
+    }
+
+    createJetPath() {
+        // Slow sweeping loop behind/around the crystal so the jet
+        // drifts through the starfield without ever blocking the UI.
+        const points = [
+            new THREE.Vector3(-44, 11, -34),
+            new THREE.Vector3(-12, 22, -58),
+            new THREE.Vector3(30, 13, -44),
+            new THREE.Vector3(46, -4, -26),
+            new THREE.Vector3(8, -15, -28),
+            new THREE.Vector3(-30, -10, -52)
+        ];
+        return new THREE.CatmullRomCurve3(points, true, 'catmullrom', 0.5);
     }
 
     createNebula() {
-        const sphereGeo = new THREE.SphereGeometry(800, 60, 40);
+        const sphereGeo = new THREE.SphereGeometry(800, 48, 32);
         sphereGeo.scale(-1, 1, 1);
 
         const canvas = document.createElement('canvas');
-        canvas.width = 2048;
-        canvas.height = 1024;
+        canvas.width = 1024;
+        canvas.height = 512;
         const ctx = canvas.getContext('2d');
 
         const gradient = ctx.createRadialGradient(
@@ -43,7 +221,7 @@ export class Background {
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        for (let i = 0; i < 15000; i++) {
+        for (let i = 0; i < 6000; i++) {
             const x = Math.random() * canvas.width;
             const y = Math.random() * canvas.height;
             const alpha = Math.random() * 0.15;
@@ -59,19 +237,16 @@ export class Background {
         this.scene.add(this.backgroundSphere);
     }
 
-
     createColoredStars() {
-        const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 100 : 6000;
+        const count = this.isMobile ? 100 : 6000;
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
-        const sizes = new Float32Array(count);
 
-        const colorPalette = [
-            new THREE.Color(0xffffff),
-            new THREE.Color(0x88ccff),
-            new THREE.Color(0xffccaa),
-            new THREE.Color(0xcc99ff)
+        const palette = [
+            [1, 1, 1],
+            [0.53, 0.8, 1],
+            [1, 0.8, 0.67],
+            [0.8, 0.6, 1]
         ];
 
         for (let i = 0; i < count; i++) {
@@ -83,12 +258,10 @@ export class Background {
             positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
             positions[i * 3 + 2] = r * Math.cos(phi);
 
-            const color = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-            colors[i * 3] = color.r;
-            colors[i * 3 + 1] = color.g;
-            colors[i * 3 + 2] = color.b;
-
-            sizes[i] = Math.random() * 2.0;
+            const c = palette[(Math.random() * palette.length) | 0];
+            colors[i * 3] = c[0];
+            colors[i * 3 + 1] = c[1];
+            colors[i * 3 + 2] = c[2];
         }
 
         const geo = new THREE.BufferGeometry();
@@ -101,7 +274,8 @@ export class Background {
             transparent: true,
             opacity: 0.8,
             blending: THREE.AdditiveBlending,
-            sizeAttenuation: true
+            sizeAttenuation: true,
+            depthWrite: false
         });
 
         this.stars = new THREE.Points(geo, mat);
@@ -109,8 +283,7 @@ export class Background {
     }
 
     createDustClouds() {
-        const isMobile = window.innerWidth < 768;
-        const particleCount = isMobile ? 100 : 800;
+        const particleCount = this.isMobile ? 100 : 800;
         const positions = new Float32Array(particleCount * 3);
 
         for (let i = 0; i < particleCount * 3; i += 3) {
@@ -154,8 +327,7 @@ export class Background {
     }
 
     createTwinklingStars() {
-        const isMobile = window.innerWidth < 768;
-        const count = isMobile ? 50 : 200;
+        const count = this.isMobile ? 50 : 200;
         const positions = new Float32Array(count * 3);
         const twinkleData = new Float32Array(count * 2);
 
@@ -190,7 +362,7 @@ export class Background {
                     vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
                     gl_Position = projectionMatrix * mvPosition;
                     float twinkle = sin(time * twinkleData.y + twinkleData.x);
-                    vAlpha = 0.4 + 0.6 * twinkle; 
+                    vAlpha = 0.4 + 0.6 * twinkle;
                     gl_PointSize = baseSize * (300.0 / -mvPosition.z);
                 }
             `,
@@ -201,7 +373,7 @@ export class Background {
                     float dist = length(coord);
                     if(dist > 0.5) discard;
                     float glow = pow(1.0 - dist * 2.0, 2.0);
-                    gl_FragColor = vec4(0.95, 0.98, 1.0, vAlpha * glow); 
+                    gl_FragColor = vec4(0.95, 0.98, 1.0, vAlpha * glow);
                 }
             `,
             transparent: true,
@@ -212,8 +384,6 @@ export class Background {
         this.twinkleStars = new THREE.Points(geo, mat);
         this.scene.add(this.twinkleStars);
     }
-
-
 
     createLights() {
         const ambientLight = new THREE.AmbientLight(0x050510, 0.4);
@@ -239,7 +409,8 @@ export class Background {
             map: sunTexture,
             color: 0xffffff,
             blending: THREE.AdditiveBlending,
-            transparent: true
+            transparent: true,
+            depthWrite: false
         });
 
         this.sunMesh = new THREE.Sprite(sunMaterial);
@@ -249,7 +420,6 @@ export class Background {
 
         const dirLight = new THREE.DirectionalLight(0xffffff, 4.5);
         dirLight.position.copy(this.sunMesh.position);
-        dirLight.castShadow = true;
         this.scene.add(dirLight);
 
         this.laserLight = new THREE.SpotLight(0x00ffff, 0, 200, 0.2, 1, 0.5);
@@ -274,11 +444,8 @@ export class Background {
             this.stars.rotation.y += 0.0003;
             this.stars.rotation.x += 0.0001;
 
-            const autoX = Math.sin(this.starTime * 0.2) * 2.0;
-            const autoY = Math.cos(this.starTime * 0.15) * 1.5;
-
-            const targetX = autoX + (this.mouseX * 12.0);
-            const targetY = autoY + (-this.mouseY * 12.0);
+            const targetX = Math.sin(this.starTime * 0.2) * 2.0 + this.mouseX * 12.0;
+            const targetY = Math.cos(this.starTime * 0.15) * 1.5 - this.mouseY * 12.0;
 
             this.stars.position.x += (targetX - this.stars.position.x) * 0.05;
             this.stars.position.y += (targetY - this.stars.position.y) * 0.05;
@@ -288,10 +455,7 @@ export class Background {
             this.dustClouds.rotation.y += 0.0002;
             this.dustClouds.rotation.z -= 0.0001;
 
-            const autoX = Math.cos(this.starTime * 0.1) * 3.0;
-            const targetX = autoX + (this.mouseX * 4.0);
-            const targetY = (-this.mouseY * 4.0);
-
+            const targetX = Math.cos(this.starTime * 0.1) * 3.0 + this.mouseX * 4.0;
             this.dustClouds.position.x += (targetX - this.dustClouds.position.x) * 0.05;
         }
 
@@ -300,11 +464,49 @@ export class Background {
             this.twinkleStars.rotation.y += 0.0005;
             this.twinkleStars.rotation.z -= 0.0002;
 
-            const targetX = (this.mouseX * 8.0);
-            const targetY = (-this.mouseY * 8.0);
+            const targetX = this.mouseX * 8.0;
+            const targetY = -this.mouseY * 8.0;
 
             this.twinkleStars.position.x += (targetX - this.twinkleStars.position.x) * 0.05;
             this.twinkleStars.position.y += (targetY - this.twinkleStars.position.y) * 0.05;
+        }
+
+        this.updateJet(deltaTime);
+    }
+
+    updateJet(deltaTime) {
+        if (!this.jet || !this.jetCurve) return;
+
+        this.jetProgress += deltaTime / JET_LOOP_DURATION;
+        if (this.jetProgress > 1) this.jetProgress -= 1;
+
+        const position = this.jetCurve.getPointAt(this.jetProgress, this._tmpPos);
+        const tangent = this.jetCurve.getTangentAt(this.jetProgress, this._tmpTan).normalize();
+
+        this.jet.position.copy(position);
+        this.jet.up.set(0, 1, 0);
+        this._tmpLook.copy(position).add(tangent);
+        this.jet.lookAt(this._tmpLook);
+        if (this.jetNoseOffset) this.jet.rotateY(this.jetNoseOffset);
+
+        // Bank into curves using turn rate vs previous frame (1 tangent lookup instead of 2)
+        const turnRate = this._prevTangent.x * tangent.z - this._prevTangent.z * tangent.x;
+        const targetBank = THREE.MathUtils.clamp(turnRate * 60, -0.5, 0.5);
+        this.jetBank += (targetBank - this.jetBank) * 0.03;
+        this.jet.rotateZ(this.jetBank);
+        this._prevTangent.copy(tangent);
+
+        // Trails + engine flicker
+        this.jet.updateMatrixWorld();
+        for (const trail of this.jetTrails) {
+            this._tmpEmit.copy(trail.offset).applyMatrix4(this.jet.matrixWorld);
+            if (!trail.seeded) this.seedTrail(trail, this._tmpEmit);
+            else this.pushTrail(trail, this._tmpEmit);
+        }
+        if (this.engineGlow) {
+            this.engineFlicker += deltaTime * 20;
+            const f = 0.75 + Math.sin(this.engineFlicker) * 0.15;
+            this.engineGlow.material.opacity = f;
         }
     }
 }

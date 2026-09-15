@@ -23,10 +23,10 @@ class DiamondPortfolio {
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         this.clock = new THREE.Clock();
+        this.tiltTarget = { x: 0.3, z: 0 };
 
         this.init();
 
-        /*            */
         window.addEventListener('contextmenu', (e) => {
             e.preventDefault();
         }, false);
@@ -37,7 +37,6 @@ class DiamondPortfolio {
                 return false;
             }
         });
-        /*            */
     }
 
     init() {
@@ -64,7 +63,8 @@ class DiamondPortfolio {
                     gsap.to(this.diamond, {
                         rotationSpeed: 0.01,
                         duration: 0.2,
-                        ease: "power2.out"
+                        ease: "power2.out",
+                        overwrite: true
                     });
                 }
             });
@@ -134,10 +134,12 @@ class DiamondPortfolio {
             gsap.to(this.diamond, {
                 rotationSpeed: 0.15,
                 duration: 0.5,
+                overwrite: true,
                 onComplete: () => {
                     gsap.to(this.diamond, {
                         rotationSpeed: 0.01,
-                        duration: 1
+                        duration: 1,
+                        overwrite: true
                     });
                 }
             });
@@ -157,22 +159,21 @@ class DiamondPortfolio {
         });
     }
 
+    clearHover() {
+        document.body.style.cursor = 'default';
+        if (this.hoveredObject) {
+            Effects.hoverEffect(this.hoveredObject, false);
+            this.hoveredObject = null;
+        }
+    }
+
     onMouseMove(event) {
         if (event.target.closest('#side-panel') || event.target.closest('.nav-menu')) {
-            document.body.style.cursor = 'default';
-
-            if (this.hoveredObject) {
-                Effects.hoverEffect(this.hoveredObject, false);
-                this.hoveredObject = null;
-            }
+            this.clearHover();
             return;
         }
         if (this.isSplitView) {
-            document.body.style.cursor = 'default';
-            if (this.hoveredObject) {
-                Effects.hoverEffect(this.hoveredObject, false);
-                this.hoveredObject = null;
-            }
+            this.clearHover();
             return;
         }
 
@@ -198,11 +199,7 @@ class DiamondPortfolio {
                 Effects.hoverEffect(this.hoveredObject, true);
             }
         } else {
-            document.body.style.cursor = 'default';
-            if (this.hoveredObject) {
-                Effects.hoverEffect(this.hoveredObject, false);
-                this.hoveredObject = null;
-            }
+            this.clearHover();
         }
 
         const x = (event.clientX / window.innerWidth) - 0.5;
@@ -210,48 +207,37 @@ class DiamondPortfolio {
 
         this.background.updateMousePosition(x, y);
 
-        gsap.to(this.diamond.diamondGroup.rotation, {
-            x: 0.3 + (y * 0.4),
-            z: (x * 0.4),
-            duration: 0.8,
-            ease: "power2.out"
-        });
+        // Tilt via lerp in animate() instead of a new gsap tween per mousemove
+        this.tiltTarget.x = 0.3 + (y * 0.4);
+        this.tiltTarget.z = x * 0.4;
     }
 
-    onClick(event) {
-        if (this.isSplitView) return;
-
+    pick(clientX, clientY) {
         const rect = this.sceneManager.renderer.domElement.getBoundingClientRect();
-        this.mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-        this.mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+        this.mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+        this.mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
         this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
         const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
 
         if (intersects.length > 0) {
-            const hitPoint = intersects[0].point;
-            this.handleDiamondClick(intersects[0].object, hitPoint);
+            this.handleDiamondClick(intersects[0].object, intersects[0].point);
+            return true;
         }
+        return false;
+    }
+
+    onClick(event) {
+        if (this.isSplitView) return;
+        this.pick(event.clientX, event.clientY);
     }
 
     onTouchStart(event) {
         if (this.isSplitView) return;
 
         const touch = event.changedTouches[0];
-        const rect = this.sceneManager.renderer.domElement.getBoundingClientRect();
-
-        this.mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
-        this.mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
-
-        this.raycaster.setFromCamera(this.mouse, this.sceneManager.camera);
-
-        const intersects = this.raycaster.intersectObjects(this.diamond.getChildren());
-
-        if (intersects.length > 0) {
+        if (this.pick(touch.clientX, touch.clientY)) {
             event.preventDefault();
-
-            const hitPoint = intersects[0].point;
-            this.handleDiamondClick(intersects[0].object, hitPoint);
         }
     }
 
@@ -321,33 +307,18 @@ class DiamondPortfolio {
         );
     }
 
-    getContentByName(name) {
-        const contentMap = {
-            'Face_Projects': Projects,
-            'Face_Experience': Skills,
-            'Face_About': { header: "ABOUT", body: "Kod yazmayı bir sanat olarak görüyorum. Estetik ve performansı birleştiren çözümler üretiyorum." },
-            'Face_Contact': Contact
-        };
-        for (const key in contentMap) {
-            if (name.includes(key)) return contentMap[key];
-        }
-        return null;
-    }
-
     animate() {
         requestAnimationFrame(() => this.animate());
 
-        const deltaTime = this.clock.getDelta();
+        const deltaTime = Math.min(this.clock.getDelta(), 0.05);
 
-        if (this.isSplitView) {
-            if (this.diamond) this.diamond.rotate();
+        // Smooth crystal tilt toward mouse target (replaces mousemove tween flood)
+        const rot = this.diamond.diamondGroup.rotation;
+        rot.x += (this.tiltTarget.x - rot.x) * 0.08;
+        rot.z += (this.tiltTarget.z - rot.z) * 0.08;
 
-            this.sceneManager.render();
-            return;
-        }
-
-        if (this.background) this.background.update(deltaTime);
         if (this.diamond) this.diamond.rotate();
+        if (!this.isSplitView && this.background) this.background.update(deltaTime);
         this.sceneManager.render();
     }
 
@@ -380,15 +351,12 @@ class DiamondPortfolio {
             newForm.addEventListener('submit', (e) => {
                 e.preventDefault();
 
-                // Honeypot Kontrolü
                 if (gotchaInput.value !== "") return;
 
-                // Butonu kilitle
                 btn.disabled = true;
                 btn.innerHTML = "VERIFYING SECURITY...";
                 status.innerHTML = "";
 
-                // reCAPTCHA Kontrolü
                 if (typeof grecaptcha === 'undefined') {
                     status.innerHTML = `<span style="color:#ff0000">> ERROR: reCAPTCHA not loaded. Check internet/index.html</span>`;
                     btn.disabled = false;

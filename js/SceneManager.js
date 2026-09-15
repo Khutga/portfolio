@@ -2,40 +2,35 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
-
 export class SceneManager {
     constructor() {
         this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        this.renderer = null;
         this.controls = null;
-        this.contentScreen = null;
 
         this.init();
     }
 
     init() {
-        const pixelRatio = Math.min(window.devicePixelRatio, 2);
-
         const isMobile = window.innerWidth < 768;
+        const pixelRatio = Math.min(window.devicePixelRatio, 2);
 
         this.renderer = new THREE.WebGLRenderer({
             antialias: !isMobile,
-            alpha: true,
+            alpha: false,
             powerPreference: "high-performance",
-            stencil: false,
-            depth: true
+            stencil: false
         });
 
         this.renderer.setPixelRatio(pixelRatio);
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-
-        this.renderer.setSize(window.innerWidth, window.innerHeight);
+        this.renderer.setClearColor(0x000005, 1);
         this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
         this.renderer.toneMappingExposure = 1.6;
         document.body.appendChild(this.renderer.domElement);
 
-        this.camera.position.z = 2.5;
+        this.camera.position.z = isMobile ? 4.5 : 2.5;
 
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
         this.controls.enableDamping = true;
@@ -45,25 +40,9 @@ export class SceneManager {
         const pmremGenerator = new THREE.PMREMGenerator(this.renderer);
         const environment = new RoomEnvironment();
         this.scene.environment = pmremGenerator.fromScene(environment).texture;
-
-        this.createContentScreen();
+        pmremGenerator.dispose();
 
         window.addEventListener('resize', () => this.onWindowResize());
-    }
-
-    createContentScreen() {
-        const geometry = new THREE.PlaneGeometry(1, 1);
-        const material = new THREE.MeshBasicMaterial({
-            transparent: true,
-            opacity: 0,
-            side: THREE.DoubleSide,
-            depthTest: false,
-            blending: THREE.NormalBlending
-        });
-
-        this.contentScreen = new THREE.Mesh(geometry, material);
-        this.contentScreen.renderOrder = 999;
-        this.scene.add(this.contentScreen);
     }
 
     onWindowResize() {

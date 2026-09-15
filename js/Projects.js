@@ -66,9 +66,12 @@ export const Projects = {
                     </div>
 
                     <div class="matrix-item project-card">
-                        <div class="matrix-head">04 / RAMAZAN & NAMAZ VAKİTLERİ - UTILITY</div>
-                        <div class="project-image-wrapper">
-                            <img src="assets/ramadan.webp" alt="Ramazan ve Namaz Vakitleri" class="project-img" draggable="false" ondragstart="return false;">
+                        <div class="matrix-head">04 / RAMADAN & PRAYER TIMES - UTILITY</div>
+                        <div class="project-gallery">
+                            <img src="assets/ramadan.webp" alt="Ramadan and Prayer Times 1" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/ramadan2.webp" alt="Ramadan and Prayer Times 2" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/ramadan3.webp" alt="Ramadan and Prayer Times 3" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/ramadan4.webp" alt="Ramadan and Prayer Times 4" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
                         </div>
                         <div class="matrix-body">
                             Location-based prayer times with multiple calculation methods (Diyanet, ISNA, MWL, Egypt, Umm al-Qura, Jafari). Qibla finder, full Quran with Turkish translation & audio recitation, daily verses, prayer guides, sahur alarm, and personal notes.
@@ -122,6 +125,31 @@ export const Projects = {
                             <span class="pill">Metronome</span>
                             <span class="pill">Tuner</span>
                             <span class="pill">Progressions</span>
+                        </div>
+                    </div>
+
+                    <div class="matrix-item project-card">
+                        <div class="matrix-head">07 / MACRO DASHBOARD - DATA ANALYTICS</div>
+                        <div class="project-gallery">
+                            <img src="assets/macro1.webp" alt="Macro Dashboard 1" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro2.webp" alt="Macro Dashboard 2" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro3.webp" alt="Macro Dashboard 3" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro4.webp" alt="Macro Dashboard 4" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro5.webp" alt="Macro Dashboard 5" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro6.webp" alt="Macro Dashboard 6" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro7.webp" alt="Macro Dashboard 7" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro8.webp" alt="Macro Dashboard 8" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                            <img src="assets/macro9.webp" alt="Macro Dashboard 9" class="project-img" draggable="false" ondragstart="return false;" loading="lazy">
+                        </div>
+                        <div class="matrix-body">
+                            Full-stack macroeconomic data analyzer connecting central bank API endpoints to a Python FastAPI backend and Flutter interface. Features comprehensive econometric charting tools and robust data pipeline connections.
+                        </div>
+                        <div class="tag-cloud">
+                            <span class="pill">FastAPI & Python</span>
+                            <span class="pill">Central Bank APIs</span>
+                            <span class="pill">Econometric Charts</span>
+                            <span class="pill">Data Pipelines</span>
+                            <span class="pill">Flutter</span>
                         </div>
                     </div>
 

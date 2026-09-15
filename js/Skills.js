@@ -86,7 +86,7 @@ export const Skills = {
                         <div class="matrix-head">
                             <span class="matrix-head">Uludağ University</span><br>
                             <span class="matrix-body">Economics</span><br>
-                            <span class="block-label" style="margin: 5px 0 0 0; font-size: 0.6rem;">SEPT 2024 - OCT 2026</span>
+                            <span class="block-label" style="margin: 5px 0 0 0; font-size: 0.6rem;">SEPT 2024 - MAY 2027</span>
                         </div>
                     </div>
                 </div>
