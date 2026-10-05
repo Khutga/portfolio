@@ -10,7 +10,19 @@ export class Diamond {
         this.rotationSpeed = 0.002;
         this.energyRing = null;
         this.cachedMeshes = [];
+        this.isLite = this.detectLite();
         this.init();
+    }
+
+    detectLite() {
+        try {
+            if (window.innerWidth < 768) return true;
+            const conn = navigator.connection || navigator.webkitConnection;
+            if (conn && conn.saveData) return true;
+            if (navigator.deviceMemory && navigator.deviceMemory <= 2) return true;
+            if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
+        } catch (e) { /* ignore */ }
+        return false;
     }
 
     init() {
@@ -24,22 +36,23 @@ export class Diamond {
         this.loader.load('./assets/diamond.glb', (gltf) => {
             const model = gltf.scene;
 
+            const lite = this.isLite;
             model.traverse((child) => {
                 if (child.isMesh) {
                     child.material = new THREE.MeshPhysicalMaterial({
                         color: 0xe0fff0,
                         metalness: 0,
                         roughness: 0.02,
-                        transmission: 1.0,
-                        thickness: 2.5,
+                        transmission: lite ? 0.9 : 1.0,
+                        thickness: lite ? 1.2 : 2.5,
                         ior: 2.417,
                         emissive: 0x000000,
                         emissiveIntensity: 0,
                         attenuationColor: 0x7afbf4,
                         attenuationDistance: 0.5,
-                        clearcoat: 1.0,
+                        clearcoat: lite ? 0.6 : 1.0,
                         clearcoatRoughness: 0,
-                        envMapIntensity: 2.0,
+                        envMapIntensity: lite ? 1.2 : 2.0,
                         transparent: true,
                         side: THREE.DoubleSide
                     });
@@ -122,7 +135,7 @@ export class Diamond {
         const texture = new THREE.CanvasTexture(canvas);
         texture.magFilter = THREE.LinearFilter;
         texture.minFilter = THREE.LinearMipmapLinearFilter;
-        texture.anisotropy = 16;
+        texture.anisotropy = this.isLite ? 4 : 16;
         texture.needsUpdate = true;
 
         const spriteMaterial = new THREE.SpriteMaterial({
@@ -160,7 +173,7 @@ export class Diamond {
     }
 
     createEnergyRing() {
-        const particleCount = 200;
+        const particleCount = this.isLite ? 80 : 200;
         const radius = 0.8;
         const positions = new Float32Array(particleCount * 3);
 

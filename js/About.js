@@ -180,6 +180,11 @@ export const About = {
                 </div>
 
                 <div class="tech-item">
+                    <img src="./assets/logos/python.svg" alt="Python" class="tech-icon" draggable="false" ondragstart="return false;" onerror="if(!this.dataset.fb){this.dataset.fb=1;this.src='./assets/logos/python.png';}">
+                    <span class="tech-name">Python</span>
+                </div>
+
+                <div class="tech-item">
                     <img src="./assets/logos/sql.png" alt="SQL" class="tech-icon" draggable="false" ondragstart="return false;">
                     <span class="tech-name">SQL</span>
                 </div>

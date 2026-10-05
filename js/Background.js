@@ -3,8 +3,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 
 const TRAIL_LENGTH = 90;
-const JET_TARGET_SIZE = 11; // bigger background aircraft
-const JET_LOOP_DURATION = 42;
+const JET_TARGET_SIZE = 20; // Star Destroyer scale — big overhead flyby
+const JET_LOOP_DURATION = 70; // slow pass, left -> right
 
 export class Background {
     constructor(scene, loadingManager) {
@@ -18,6 +18,7 @@ export class Background {
         this.mouseX = 0;
         this.mouseY = 0;
         this.isMobile = window.innerWidth < 768;
+        this.isLite = this.detectLite();
 
         this.jet = null;
         this.jetCurve = null;
@@ -38,6 +39,26 @@ export class Background {
         this.init();
     }
 
+    detectLite() {
+        try {
+            if (window.innerWidth < 768) return true;
+            const conn = navigator.connection || navigator.webkitConnection;
+            if (conn && conn.saveData) return true;
+            if (navigator.deviceMemory && navigator.deviceMemory <= 2) return true;
+            if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
+        } catch (e) { /* ignore */ }
+        return false;
+    }
+
+    shouldSkipJet() {
+        try {
+            if (window.innerWidth < 768) return true;
+            const conn = navigator.connection || navigator.webkitConnection;
+            if (conn && conn.saveData) return true;
+        } catch (e) { /* ignore */ }
+        return false;
+    }
+
     init() {
         this.createNebula();
         this.createColoredStars();
@@ -48,7 +69,7 @@ export class Background {
     }
 
     createJet() {
-        if (this.isMobile) return; // keep the background lean on phones
+        if (this.shouldSkipJet()) return; // phones / data-saver only — desktop always gets the jet
 
         const loader = new GLTFLoader(this.loadingManager);
 
@@ -72,18 +93,18 @@ export class Background {
             model.position.sub(center);
             model.scale.setScalar(scale);
 
-            // Much darker stealth finish: kill bright paint, keep silhouette.
+            // Dark stealth finish, but still readable on desktop GPUs.
             model.traverse((child) => {
                 if (child.isMesh) {
                     child.castShadow = false;
                     child.receiveShadow = false;
                     const mat = child.material;
                     if (mat) {
-                        if ('color' in mat && mat.color) mat.color.multiplyScalar(0.16);
+                        if ('color' in mat && mat.color) mat.color.multiplyScalar(0.32);
                         if ('emissive' in mat && mat.emissive) mat.emissive.setRGB(0, 0, 0);
                         if ('metalness' in mat) mat.metalness = 0.85;
                         if ('roughness' in mat) mat.roughness = 0.55;
-                        if ('envMapIntensity' in mat) mat.envMapIntensity = 0.25;
+                        if ('envMapIntensity' in mat) mat.envMapIntensity = 0.5;
                         mat.toneMapped = true;
                     }
                 }
@@ -190,17 +211,16 @@ export class Background {
     }
 
     createJetPath() {
-        // Slow sweeping loop behind/around the crystal so the jet
-        // drifts through the starfield without ever blocking the UI.
+        // Star Destroyer flyby: straight line, left -> right, high above the
+        // crystal and behind it (z < 0) so it never occludes clicks.
+        // Ends are far off-screen so the wrap jump is invisible.
         const points = [
-            new THREE.Vector3(-44, 11, -34),
-            new THREE.Vector3(-12, 22, -58),
-            new THREE.Vector3(30, 13, -44),
-            new THREE.Vector3(46, -4, -26),
-            new THREE.Vector3(8, -15, -28),
-            new THREE.Vector3(-30, -10, -52)
+            new THREE.Vector3(-65, 8.5, -16),
+            new THREE.Vector3(-22, 8.5, -16),
+            new THREE.Vector3(22, 8.5, -16),
+            new THREE.Vector3(65, 8.5, -16)
         ];
-        return new THREE.CatmullRomCurve3(points, true, 'catmullrom', 0.5);
+        return new THREE.CatmullRomCurve3(points, false, 'catmullrom', 0);
     }
 
     createNebula() {
@@ -242,7 +262,7 @@ export class Background {
     }
 
     createColoredStars() {
-        const count = this.isMobile ? 100 : 6000;
+        const count = (this.isMobile || this.isLite) ? 1200 : 6000;
         const positions = new Float32Array(count * 3);
         const colors = new Float32Array(count * 3);
 
@@ -287,7 +307,7 @@ export class Background {
     }
 
     createDustClouds() {
-        const particleCount = this.isMobile ? 100 : 800;
+        const particleCount = (this.isMobile || this.isLite) ? 150 : 800;
         const positions = new Float32Array(particleCount * 3);
 
         for (let i = 0; i < particleCount * 3; i += 3) {
@@ -331,7 +351,7 @@ export class Background {
     }
 
     createTwinklingStars() {
-        const count = this.isMobile ? 50 : 200;
+        const count = (this.isMobile || this.isLite) ? 50 : 200;
         const positions = new Float32Array(count * 3);
         const twinkleData = new Float32Array(count * 2);
 
@@ -482,7 +502,12 @@ export class Background {
         if (!this.jet || !this.jetCurve) return;
 
         this.jetProgress += deltaTime / JET_LOOP_DURATION;
-        if (this.jetProgress > 1) this.jetProgress -= 1;
+        if (this.jetProgress > 1) {
+            this.jetProgress -= 1;
+            // Straight flyby wraps right-edge -> left-edge: re-seed trails
+            // so no streak line crosses the screen on teleport.
+            for (const trail of this.jetTrails) trail.seeded = false;
+        }
 
         const position = this.jetCurve.getPointAt(this.jetProgress, this._tmpPos);
         const tangent = this.jetCurve.getTangentAt(this.jetProgress, this._tmpTan).normalize();

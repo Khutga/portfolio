@@ -9,11 +9,27 @@ img {
 }
 
 /* Genel sayfa yapısı: Kenar boşluklarını sıfırlar ve taşmaları gizleyerek 3D sahne için temiz bir alan sağlar */
+html,
 body {
     margin: 0;
     overflow: hidden;
     background-color: #000005;
     font-family: 'Segoe UI', sans-serif;
+    /* Left-drag orbits the cosmos — never select/highlight text in blue */
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+canvas {
+    display: block;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
 }
 
 /* Yan panel (Drawer): İçeriklerin (Skills, Projects vb.) gösterildiği ana konteyner. Başlangıçta ekranın sağında gizlidir */
@@ -958,7 +974,15 @@ body {
     align-items: center;
     gap: 15px;
     z-index: 9999;
-    pointer-events: none;
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+#interaction-hint * {
+    pointer-events: none !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
 }
 
 /* Sahne Alanı (Büyütüldü) */
@@ -1111,6 +1135,14 @@ body {
 /* Dim the diamond button while reading */
 .diamond-menu-btn.faded {
     opacity: 0.15;
+}
+
+#interaction-hint {
+    transition: opacity 0.5s ease;
+}
+
+.loader-error {
+    margin-top: 4px;
 }
 
 /* Mobil Skill Kartlarının Üst Üste Binmesini Önleme */

@@ -1,0 +1,36 @@
+# --- Security: deny secret / VCS / directory exposure ---
+<Files "config.php">
+    Require all denied
+</Files>
+<Files ".env">
+    Require all denied
+</Files>
+RedirectMatch 404 /\.git(/|$)
+Options -Indexes
+
+# --- Security headers (Apache + mod_headers) ---
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    # HSTS: enable only AFTER confirming full-HTTPS works on seyidzade.sbs
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    # NOTE: 'unsafe-inline' in script-src is REQUIRED here: the <script type="importmap"> block
+    # in index.html is inline by spec, and Contact/About templates use inline handlers
+    # (onsubmit/ondragstart/onerror). Removing it breaks `import three` resolution.
+    # blob: in connect-src = GLTF embedded textures; worker-src blob: = Draco decoder worker;
+    # 'wasm-unsafe-eval' = allow Draco WASM compile without full 'unsafe-eval'.
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'wasm-unsafe-eval' 'unsafe-inline' https://unpkg.com https://esm.sh https://www.google.com https://www.gstatic.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' blob: https://unpkg.com https://esm.sh https://www.google.com; frame-src https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'"
+</IfModule>
+
+# --- Caching: immutable 3D + image assets, short HTML ---
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType model/gltf-binary "access plus 30 days"
+    ExpiresByType image/webp "access plus 30 days"
+    ExpiresByType image/svg+xml "access plus 30 days"
+    ExpiresByType application/javascript "access plus 7 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>

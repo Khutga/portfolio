@@ -1,0 +1,17 @@
+# Secrets — never commit these (contact.php requires config.php at runtime)
+config.php
+.env
+.env.*
+*.env
+
+# Composer / PHPMailer (install via composer, don't vendor secrets)
+vendor/
+PHPMailer/
+composer.phar
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/launch.json
+*.log

@@ -4,9 +4,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ali Seyidzade</title>
+    <title>Ali Seyidzade — Full-Stack Developer (Flutter, Dart, React, Three.js)</title>
 
-    <meta name="description" content="Portfolio of Ali Seyidzade - Full Stack Developer.">
+    <meta name="description" content="Portfolio of Ali Seyidzade — Full-Stack Developer building Flutter & Dart mobile apps, React frontends, Node.js backends and Three.js experiences. Projects: CFD Insurance, Taxymaxy, streaming, Ramadan, UniTools, Guitar Companion, Macro Dashboard.">
+    <meta name="keywords" content="Ali Seyidzade, Full-Stack Developer, Flutter, Dart, React, Three.js, Node.js, Firebase, portfolio">
+    <meta name="author" content="Ali Seyidzade">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://seyidzade.sbs/">
+    <meta name="theme-color" content="#000005">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://seyidzade.sbs/">
+    <meta property="og:title" content="Ali Seyidzade — Full-Stack Developer">
+    <meta property="og:description" content="Flutter & Dart mobile apps, React frontends, Node.js backends and 3D web experiences. View projects, skills and contact.">
+    <meta property="og:image" content="https://seyidzade.sbs/assets/profile.webp">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ali Seyidzade — Full-Stack Developer">
+    <meta name="twitter:description" content="Flutter, Dart, React, Three.js — projects, skills and contact.">
+    <meta name="twitter:image" content="https://seyidzade.sbs/assets/profile.webp">
+
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://esm.sh" crossorigin>
 
     <script type="importmap">
         {
@@ -25,7 +44,7 @@
 </head>
 
 <body>
-    <div id="preloader">
+    <div id="preloader" role="status" aria-label="Loading portfolio">
         <div class="loader-content">
             <div class="loader-diamond"></div>
             <div class="loader-text">LOADING...</div>
@@ -33,22 +52,23 @@
                 <div class="loader-bar"></div>
             </div>
             <div class="loader-percentage">0%</div>
+            <div class="loader-error" hidden></div>
         </div>
     </div>
-    <main id="side-panel">
-        <button id="close-side-btn">&times;</button>
+    <main id="side-panel" aria-label="Portfolio content">
+        <button id="close-side-btn" aria-label="Close panel">&times;</button>
         <div class="content-wrapper">
             <h1 id="side-title">Başlık</h1>
             <p id="side-desc">İçerik metni buraya gelecek...</p>
         </div>
     </main>
-    <div id="image-lightbox" class="image-modal">
-        <button class="lightbox-nav lightbox-prev">&#10094;</button>
+    <div id="image-lightbox" class="image-modal" role="dialog" aria-label="Image preview">
+        <button class="lightbox-nav lightbox-prev" aria-label="Previous image">&#10094;</button>
         <img alt="Preview">
-        <button class="lightbox-nav lightbox-next">&#10095;</button>
+        <button class="lightbox-nav lightbox-next" aria-label="Next image">&#10095;</button>
         <div class="lightbox-counter"></div>
     </div>
-    <div id="interaction-hint">
+    <div id="interaction-hint" aria-hidden="true">
         <div class="hint-scene">
             <svg class="crystal-icon" viewBox="0 0 24 24" fill="none" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2L20 9L12 22L4 9L12 2Z" />
@@ -63,6 +83,20 @@
 
         <span class="hint-text">TAP TO CRYSTAL</span>
     </div>
+    <noscript>
+        <div style="padding:40px;font-family:sans-serif;color:#fff;background:#000005">
+            <h1>Ali Seyidzade — Full-Stack Developer</h1>
+            <p>Flutter &amp; Dart mobile apps, React frontends, Node.js backends and Three.js experiences. This portfolio needs JavaScript for the 3D crystal navigation.</p>
+            <h2>Sections</h2>
+            <ul>
+                <li><a href="#about">About — Ali Seyidzade, technology arsenal</a></li>
+                <li><a href="#skills">Skills — frontend, backend, mobile, database &amp; cloud</a></li>
+                <li><a href="#projects">Projects — CFD Insurance, Taxymaxy, Streaming App, Ramadan &amp; Prayer Times, UniTools, Guitar Companion, Macro Dashboard</a></li>
+                <li><a href="#contact">Contact — seyidzade62@gmail.com, LinkedIn, GitHub</a></li>
+            </ul>
+            <p>Contact: <a href="mailto:seyidzade62@gmail.com">seyidzade62@gmail.com</a> — Bursa, Türkiye.</p>
+        </div>
+    </noscript>
 
 </body>
 

@@ -19,11 +19,14 @@ class DiamondPortfolio {
         this.ui = new UI();
 
         this.isSplitView = false;
+        this.isLoaded = false;
         this.hoveredObject = null;
         this.raycaster = new THREE.Raycaster();
         this.mouse = new THREE.Vector2();
         this.clock = new THREE.Clock();
         this.tiltTarget = { x: 0.3, z: 0 };
+        this._downPos = null;
+        this._downTime = 0;
 
         this.init();
 
@@ -42,9 +45,18 @@ class DiamondPortfolio {
     init() {
         this.ui.setCloseCallback(() => this.resetView());
         this.ui.setMenuCallback((faceId) => this.handleMenuNavigation(faceId));
+        this._suppressHash = false;
+        this._pendingHash = (window.location.hash || '').replace('#', '').toLowerCase();
         window.addEventListener('mousemove', (e) => this.onMouseMove(e));
-        window.addEventListener('click', (e) => this.onClick(e));
-        window.addEventListener('touchstart', (e) => this.onTouchStart(e), { passive: false });
+        window.addEventListener('hashchange', () => this.handleHashChange());
+        window.addEventListener('keydown', (e) => this.onKeyDown(e));
+        const canvas = this.sceneManager.renderer.domElement;
+        // Only left-button / single-touch taps on the canvas count as clicks.
+        // Dragging to orbit (left-drag) must NOT trigger a diamond click and
+        // must NOT start a text selection (blue "Touch here" highlight).
+        canvas.addEventListener('pointerdown', (e) => this.onPointerDown(e));
+        canvas.addEventListener('pointerup', (e) => this.onPointerUp(e));
+        canvas.addEventListener('contextmenu', (e) => e.preventDefault());
         this.contentMap = {
             'Face_Projects': Projects,
             'Face_Experience': Skills,
@@ -80,53 +92,151 @@ class DiamondPortfolio {
         const manager = new THREE.LoadingManager();
         const loaderBar = document.querySelector('.loader-bar');
         const loaderPercentage = document.querySelector('.loader-percentage');
+        const loaderText = document.querySelector('.loader-text');
+        const loaderError = document.querySelector('.loader-error');
         const preloader = document.getElementById('preloader');
 
         manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+            if (!itemsTotal) return;
             const progress = (itemsLoaded / itemsTotal) * 100;
-            loaderBar.style.transform = `scaleX(${progress / 100})`;
-            loaderPercentage.innerText = Math.round(progress) + '%';
+            if (loaderBar) loaderBar.style.transform = `scaleX(${progress / 100})`;
+            if (loaderPercentage) loaderPercentage.innerText = Math.round(progress) + '%';
         };
 
+        manager.onError = (url) => {
+            console.warn('Asset failed to load:', url);
+            if (loaderError) {
+                loaderError.hidden = false;
+                loaderError.textContent = 'A 3D asset failed to load — showing lite scene…';
+                loaderError.style.cssText = 'color:#ff6666;font-family:monospace;font-size:0.75rem;max-width:260px';
+            }
+            // Don't hang forever on a missing .glb — finish with what we have.
+            clearTimeout(this._loadFallbackTimer);
+            this._loadFallbackTimer = setTimeout(() => this.finishLoading(), 1500);
+        };
+
+        // Safety net: never trap the user behind the loader (slow CDN, blocked Draco, missing file).
+        clearTimeout(this._loadFallbackTimer);
+        this._loadFallbackTimer = setTimeout(() => {
+            if (!this.isLoaded) {
+                console.warn('Loading timed out — forcing lite finish.');
+                this.finishLoading();
+            }
+        }, 15000);
+
         manager.onLoad = () => {
-            if (this.diamond && this.diamond.warmUp) {
-                this.diamond.warmUp();
-            }
-
-            if (Effects.warmUp) {
-                Effects.warmUp(this.sceneManager.scene);
-            }
-
-            if (this.diamond && this.raycaster) {
-                this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.sceneManager.camera);
-                this.raycaster.intersectObjects(this.diamond.getChildren());
-            }
-
-            gsap.to(this.diamond, {
-                rotationSpeed: 0.15,
-                duration: 0.1,
-                overwrite: true,
-                onComplete: () => {
-                    this.diamond.rotationSpeed = 0.01;
-                }
-            });
-
-            gsap.to(preloader, {
-                opacity: 0,
-                duration: 1,
-                delay: 0.5,
-                ease: "power2.inOut",
-                onComplete: () => {
-                    preloader.style.display = 'none';
-                }
-            });
+            clearTimeout(this._loadFallbackTimer);
+            this.finishLoading();
         };
 
         return manager;
     }
 
+    finishLoading() {
+        if (this.isLoaded) return;
+        const preloader = document.getElementById('preloader');
+        if (this.diamond && this.diamond.warmUp) {
+            try { this.diamond.warmUp(); } catch (e) { console.warn(e); }
+        }
+
+        if (Effects.warmUp) {
+            try { Effects.warmUp(this.sceneManager.scene); } catch (e) { console.warn(e); }
+        }
+
+        if (this.diamond && this.raycaster) {
+            try {
+                this.raycaster.setFromCamera(new THREE.Vector2(0, 0), this.sceneManager.camera);
+                this.raycaster.intersectObjects(this.diamond.getChildren());
+            } catch (e) { console.warn(e); }
+        }
+
+        gsap.to(this.diamond, {
+            rotationSpeed: 0.15,
+            duration: 0.1,
+            overwrite: true,
+            onComplete: () => {
+                this.diamond.rotationSpeed = 0.01;
+            }
+        });
+
+        // Allow clicks only after everything is ready, and stop the
+        // fading preloader from eating / blocking pointer events.
+        this.isLoaded = true;
+        if (preloader) preloader.style.pointerEvents = 'none';
+
+        gsap.to(preloader, {
+            opacity: 0,
+            duration: 1,
+            delay: 0.5,
+            ease: "power2.inOut",
+            onComplete: () => {
+                preloader.style.display = 'none';
+            }
+        });
+
+        // Deep link: seyidzade.sbs/#projects etc. opens right after load.
+        const pending = (this._pendingHash || (window.location.hash || '').replace('#', '').toLowerCase());
+        this._pendingHash = '';
+        if (pending) {
+            const face = this.hashToFace(pending);
+            if (face) {
+                setTimeout(() => this.triggerSection(face), 900);
+            }
+        }
+    }
+
+    faceToHash(faceName) {
+        const map = { 'Face_About': 'about', 'Face_Experience': 'skills', 'Face_Projects': 'projects', 'Face_Contact': 'contact' };
+        return map[faceName] || '';
+    }
+
+    hashToFace(hash) {
+        const map = { 'about': 'Face_About', 'skills': 'Face_Experience', 'experience': 'Face_Experience', 'projects': 'Face_Projects', 'contact': 'Face_Contact' };
+        return map[(hash || '').toLowerCase()] || '';
+    }
+
+    setHash(faceName) {
+        const h = this.faceToHash(faceName);
+        if (!h) return;
+        if ((window.location.hash || '').replace('#', '') === h) return;
+        this._suppressHash = true;
+        window.location.hash = h;
+        setTimeout(() => { this._suppressHash = false; }, 50);
+    }
+
+    handleHashChange() {
+        if (this._suppressHash) return;
+        const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+        if (!hash) {
+            if (this.isSplitView) this.resetView(true);
+            return;
+        }
+        const face = this.hashToFace(hash);
+        if (!face) return;
+        if (!this.isLoaded) {
+            this._pendingHash = hash;
+            return;
+        }
+        if (this.isSplitView) {
+            this.ui.scrollToSection(face);
+            this.ui.highlightItem(face);
+        } else {
+            this.triggerSection(face);
+        }
+    }
+
+    onKeyDown(event) {
+        if (event.key === 'Escape') {
+            // Lightbox has its own Escape handler in UI.js — let it close first.
+            const lightbox = document.getElementById('image-lightbox');
+            if (lightbox && lightbox.style.display === 'flex') return;
+            if (this.isSplitView) this.resetView();
+        }
+    }
+
     handleMenuNavigation(faceName) {
         if (this.isSplitView) {
+            this.setHash(faceName);
             this.ui.scrollToSection(faceName);
             this.ui.highlightItem(faceName);
             setTimeout(() => this.ui.initLightbox(), 500);
@@ -227,34 +337,47 @@ class DiamondPortfolio {
         return false;
     }
 
-    onClick(event) {
-        if (this.isSplitView) return;
-        this.pick(event.clientX, event.clientY);
+    onPointerDown(event) {
+        // Left button / touch only. Ignore right & middle buttons entirely.
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        this._downPos = { x: event.clientX, y: event.clientY };
+        this._downTime = performance.now();
+        // Kill any blue text-selection highlight the moment user presses.
+        if (window.getSelection) {
+            const sel = window.getSelection();
+            if (sel && sel.rangeCount > 0 && !sel.isCollapsed) sel.removeAllRanges();
+        }
     }
 
-    onTouchStart(event) {
-        if (this.isSplitView) return;
-
-        const touch = event.changedTouches[0];
-        if (this.pick(touch.clientX, touch.clientY)) {
-            event.preventDefault();
+    onPointerUp(event) {
+        if (event.pointerType === 'mouse' && event.button !== 0) return;
+        if (!this._downPos) return;
+        if (!this.isLoaded || this.isSplitView) {
+            this._downPos = null;
+            return;
         }
+        const dx = event.clientX - this._downPos.x;
+        const dy = event.clientY - this._downPos.y;
+        const dist = Math.hypot(dx, dy);
+        const dt = performance.now() - this._downTime;
+        this._downPos = null;
+        // If user dragged (orbiting the cosmos), it's NOT a click.
+        if (dist > 6 || dt > 500) return;
+        this.pick(event.clientX, event.clientY);
     }
 
 
     handleDiamondClick(object, hitPoint) {
+        const name = object.name;
+        if (!this.contentMap[name]) return;
         if (this.sceneManager.controls) {
             this.sceneManager.controls.enabled = false;
         }
+        this.setHash(name);
         const hintElement = document.getElementById('interaction-hint');
         if (hintElement) {
             hintElement.style.opacity = '0';
-            setTimeout(() => hintElement.remove(), 500);
-        }
-        const name = object.name;
-
-        if (!this.contentMap[name]) {
-            return;
+            setTimeout(() => { hintElement.style.display = 'none'; }, 500);
         }
 
         this.isSplitView = true;
@@ -291,14 +414,33 @@ class DiamondPortfolio {
         }
     }
 
-    resetView() {
+    resetView(skipHash = false) {
         if (!this.isSplitView) return;
         if (this.sceneManager.controls) {
             this.sceneManager.controls.enabled = true;
         }
         this.isSplitView = false;
 
+        if (!skipHash && window.location.hash) {
+            try {
+                history.pushState(null, '', window.location.pathname + window.location.search);
+            } catch (e) {
+                this._suppressHash = true;
+                window.location.hash = '';
+                setTimeout(() => { this._suppressHash = false; }, 50);
+            }
+        }
+
         this.ui.clearHighlights();
+
+        // Restore hint on close.
+        const hintElement = document.getElementById('interaction-hint');
+        if (hintElement) {
+            hintElement.style.display = 'flex';
+            requestAnimationFrame(() => { hintElement.style.opacity = '1'; });
+            const label = hintElement.querySelector('.hint-text');
+            if (label) label.textContent = 'DRAG TO ORBIT • TAP CRYSTAL';
+        }
 
         Effects.leaveSplitView(
             this.diamond,
@@ -318,7 +460,11 @@ class DiamondPortfolio {
         rot.z += (this.tiltTarget.z - rot.z) * 0.08;
 
         if (this.diamond) this.diamond.rotate();
-        if (!this.isSplitView && this.background) this.background.update(deltaTime);
+        if (this.background) {
+            // Jet keeps flying even with the menu open (stars stay calm while reading).
+            if (!this.isSplitView) this.background.update(deltaTime);
+            else this.background.updateJet(deltaTime);
+        }
         this.sceneManager.render();
     }
 
@@ -394,11 +540,16 @@ class DiamondPortfolio {
                                 throw new Error("Server Error: " + responseText);
                             }
 
+                            const setStatus = (ok, text) => {
+                                status.textContent = (ok ? '> SUCCESS: ' : '> ERROR: ') + String(text || '');
+                                status.style.color = ok ? '#00ff00' : '#ff0000';
+                                status.style.textShadow = ok ? '0 0 5px #00ff00' : '0 0 5px #ff0000';
+                            };
                             if (result.success) {
-                                status.innerHTML = `<span style="color:#00ff00; text-shadow: 0 0 5px #00ff00;">> SUCCESS: ${result.message}</span>`;
+                                setStatus(true, result.message);
                                 newForm.reset();
                             } else {
-                                status.innerHTML = `<span style="color:#ff0000; text-shadow: 0 0 5px #ff0000;">> ERROR: ${result.message}</span>`;
+                                setStatus(false, result.message);
                             }
 
                         } catch (error) {
